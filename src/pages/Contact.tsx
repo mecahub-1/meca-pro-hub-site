@@ -2,6 +2,8 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactForm } from "@/components/ContactForm";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InfoIcon } from "lucide-react";
 
 const Contact = () => {
   return (
@@ -24,6 +26,14 @@ const Contact = () => {
         <section className="section-padding bg-white dark:bg-gray-800">
           <div className="container-padded">
             <div className="max-w-2xl mx-auto">
+              <Alert className="mb-6">
+                <InfoIcon className="h-4 w-4" />
+                <AlertDescription>
+                  Pour recevoir les emails, l'administrateur doit vérifier un domaine dans Resend.com 
+                  et mettre à jour l'adresse d'expédition.
+                </AlertDescription>
+              </Alert>
+              
               <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-8">
                 <ContactForm />
               </div>

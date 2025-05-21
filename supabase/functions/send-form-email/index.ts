@@ -179,8 +179,10 @@ async function sendContactEmail(data: ContactFormData) {
       return { error: "Service d'envoi d'emails non configuré" };
     }
     
+    // Mettre à jour l'adresse d'expéditeur pour utiliser un domaine vérifié
+    // Note: Avant d'utiliser votre propre domaine, vous devez le vérifier sur resend.com
     const result = await resend.emails.send({
-      from: "MecaHUB Pro <onboarding@resend.dev>",
+      from: "MecaHUB Pro <onboarding@resend.dev>", // Remplacer par votre domaine vérifié plus tard
       to: [recipientEmail],
       subject: `Nouvelle demande de contact - ${data.company}`,
       html: `
@@ -230,8 +232,10 @@ async function sendJobApplicationEmail(data: JobApplicationData) {
       return { error: "Service d'envoi d'emails non configuré" };
     }
     
+    // Mettre à jour l'adresse d'expéditeur pour utiliser un domaine vérifié
+    // Note: Avant d'utiliser votre propre domaine, vous devez le vérifier sur resend.com
     const result = await resend.emails.send({
-      from: "MecaHUB Pro <onboarding@resend.dev>",
+      from: "MecaHUB Pro <onboarding@resend.dev>", // Remplacer par votre domaine vérifié plus tard
       to: [recipientEmail],
       subject: `Nouvelle candidature - ${data.fullName}`,
       html: `

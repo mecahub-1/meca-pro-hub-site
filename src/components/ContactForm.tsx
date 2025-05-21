@@ -157,8 +157,10 @@ export function ContactForm() {
       if (!response.ok) {
         console.error("Email sending failed:", emailResponseData);
         
-        // Afficher une erreur spécifique si l'API indique un problème de configuration
-        if (emailResponseData.details && emailResponseData.details.includes("L'administrateur doit configurer")) {
+        // FIX: Check if details exists and if it's a string before using includes()
+        if (emailResponseData.details && 
+            typeof emailResponseData.details === 'string' && 
+            emailResponseData.details.includes("L'administrateur doit configurer")) {
           setApiError("La configuration d'envoi d'emails n'est pas complète. Votre demande a été enregistrée et nous la traiterons dès que possible.");
         } else {
           throw new Error(emailResponseData.error || emailResponseData.details || "Erreur lors de l'envoi du formulaire");
