@@ -5,21 +5,19 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.7";
 
 // Use proper environment variable for Resend API key
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
-const recipientEmail = Deno.env.get("RECIPIENT_EMAIL");
+const recipientEmail = Deno.env.get("RECIPIENT_EMAIL") || "contact@mecahub.fr";
 
 // Log validation of API keys
 console.log(`Resend API key present: ${!!resendApiKey}`);
 console.log(`Recipient email present: ${!!recipientEmail}`);
 
+// Vérifier si les clés API sont présentes
 if (!resendApiKey) {
   console.error("RESEND_API_KEY environment variable is not set");
 }
 
-if (!recipientEmail) {
-  console.error("RECIPIENT_EMAIL environment variable is not set");
-}
-
-const resend = new Resend(resendApiKey);
+// Initialiser Resend uniquement si la clé API est disponible
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 // Création du client Supabase
 const supabaseUrl = "https://jswapqasgatjjwgbrsdc.supabase.co";
@@ -82,6 +80,21 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ error: "Données de formulaire invalides" }),
         {
           status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+    
+    // Vérifier si Resend est configuré
+    if (!resend) {
+      console.error("Resend n'est pas configuré - La clé API Resend est manquante");
+      return new Response(
+        JSON.stringify({ 
+          error: "Configuration d'envoi d'emails manquante", 
+          details: "L'administrateur doit configurer la clé API Resend." 
+        }),
+        {
+          status: 500,
           headers: { "Content-Type": "application/json", ...corsHeaders },
         }
       );
@@ -162,9 +175,13 @@ async function sendContactEmail(data: ContactFormData) {
     "";
 
   try {
+    if (!resend) {
+      return { error: "Service d'envoi d'emails non configuré" };
+    }
+    
     const result = await resend.emails.send({
       from: "MecaHUB Pro <onboarding@resend.dev>",
-      to: [recipientEmail as string],
+      to: [recipientEmail],
       subject: `Nouvelle demande de contact - ${data.company}`,
       html: `
         <h1>Nouvelle demande de contact</h1>
@@ -209,9 +226,13 @@ async function sendJobApplicationEmail(data: JobApplicationData) {
     "";
 
   try {
+    if (!resend) {
+      return { error: "Service d'envoi d'emails non configuré" };
+    }
+    
     const result = await resend.emails.send({
       from: "MecaHUB Pro <onboarding@resend.dev>",
-      to: [recipientEmail as string],
+      to: [recipientEmail],
       subject: `Nouvelle candidature - ${data.fullName}`,
       html: `
         <h1>Nouvelle candidature</h1>

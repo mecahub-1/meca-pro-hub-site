@@ -2,10 +2,13 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 export function ContactForm() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     company: "",
     name: "",
@@ -20,11 +23,15 @@ export function ContactForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Effacer les erreurs lorsque l'utilisateur modifie le formulaire
+    setApiError(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFormData((prev) => ({ ...prev, file: e.target.files![0] }));
+      // Effacer les erreurs lorsque l'utilisateur modifie le formulaire
+      setApiError(null);
     }
   };
 
@@ -62,6 +69,7 @@ export function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setApiError(null);
 
     try {
       // Données à envoyer à l'API
@@ -148,7 +156,13 @@ export function ContactForm() {
 
       if (!response.ok) {
         console.error("Email sending failed:", emailResponseData);
-        throw new Error(emailResponseData.error || emailResponseData.details || "Erreur lors de l'envoi du formulaire");
+        
+        // Afficher une erreur spécifique si l'API indique un problème de configuration
+        if (emailResponseData.details && emailResponseData.details.includes("L'administrateur doit configurer")) {
+          setApiError("La configuration d'envoi d'emails n'est pas complète. Votre demande a été enregistrée et nous la traiterons dès que possible.");
+        } else {
+          throw new Error(emailResponseData.error || emailResponseData.details || "Erreur lors de l'envoi du formulaire");
+        }
       }
 
       // Réinitialiser le formulaire
@@ -181,6 +195,14 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {apiError && (
+        <Alert variant="default">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Information</AlertTitle>
+          <AlertDescription>{apiError}</AlertDescription>
+        </Alert>
+      )}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label htmlFor="company" className="text-sm font-medium text-gray-700 dark:text-gray-300">
