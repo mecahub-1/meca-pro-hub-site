@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.7";
@@ -178,9 +179,9 @@ async function sendContactEmail(data: ContactFormData) {
       return { error: "Service d'envoi d'emails non configuré" };
     }
     
-    // Mise à jour pour utiliser le nouvel email vérifié
+    // Utiliser l'adresse onboarding@resend.dev qui est toujours vérifiée par défaut
     const result = await resend.emails.send({
-      from: "MecaHUB Pro <contact@mecahub.fr>",
+      from: "MecaHUB Pro <onboarding@resend.dev>",
       to: [recipientEmail],
       subject: `Nouvelle demande de contact - ${data.company}`,
       html: `
@@ -230,9 +231,9 @@ async function sendJobApplicationEmail(data: JobApplicationData) {
       return { error: "Service d'envoi d'emails non configuré" };
     }
     
-    // Mise à jour pour utiliser le nouvel email vérifié
+    // Utiliser l'adresse onboarding@resend.dev qui est toujours vérifiée par défaut
     const result = await resend.emails.send({
-      from: "MecaHUB Pro <contact@mecahub.fr>",
+      from: "MecaHUB Pro <onboarding@resend.dev>",
       to: [recipientEmail],
       subject: `Nouvelle candidature - ${data.fullName}`,
       html: `
