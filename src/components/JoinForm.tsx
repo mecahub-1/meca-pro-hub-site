@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export function JoinForm() {
   const { toast } = useToast();
@@ -29,17 +30,100 @@ export function JoinForm() {
     }
   };
 
+  const uploadFile = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("formType", "job");
+
+      const response = await fetch(
+        "https://jswapqasgatjjwgbrsdc.supabase.co/functions/v1/upload-file",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erreur lors de l'upload: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Erreur d'upload:", error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Simulation d'une soumission de formulaire
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (!formData.cv) {
+        throw new Error("Le CV est obligatoire.");
+      }
       
-      // Ici, on pourrait envoyer les données à Supabase ou une autre base de données
-      console.log("Profile data submitted:", formData);
-      
+      // Uploader le CV
+      const uploadResult = await uploadFile(formData.cv);
+
+      // Données à envoyer à l'API
+      const emailData = {
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        status: formData.status,
+        skills: formData.skills,
+        software: formData.software,
+        experience: formData.experience,
+        availability: formData.availability,
+        message: formData.message,
+        cvData: {
+          fileName: uploadResult.fileName,
+          fileUrl: uploadResult.fileUrl
+        }
+      };
+
+      // Enregistrer la candidature dans la base de données
+      const { data: jobData, error: jobError } = await supabase
+        .from("job_applications")
+        .insert({
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          status: formData.status,
+          skills: formData.skills,
+          software: formData.software,
+          experience: formData.experience,
+          availability: formData.availability,
+          message: formData.message,
+          cv_path: uploadResult.fileUrl
+        });
+
+      if (jobError) {
+        console.error("Erreur d'enregistrement en base:", jobError);
+      }
+
+      // Envoyer l'email
+      const response = await fetch(
+        "https://jswapqasgatjjwgbrsdc.supabase.co/functions/v1/send-form-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            formType: "job",
+            formData: emailData,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Erreur lors de l'envoi du formulaire");
+      }
+
       // Réinitialiser le formulaire
       setFormData({
         fullName: "",
@@ -58,11 +142,11 @@ export function JoinForm() {
         title: "Candidature envoyée !",
         description: "Nous étudierons votre profil et reviendrons vers vous rapidement.",
       });
-    } catch (error) {
-      console.error("Error submitting form:", error);
+    } catch (error: any) {
+      console.error("Erreur lors de l'envoi:", error);
       toast({
         title: "Erreur lors de l'envoi",
-        description: "Veuillez réessayer ultérieurement.",
+        description: error.message || "Veuillez réessayer ultérieurement.",
         variant: "destructive",
       });
     } finally {

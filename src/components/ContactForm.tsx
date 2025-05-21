@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export function ContactForm() {
   const { toast } = useToast();
@@ -27,17 +28,103 @@ export function ContactForm() {
     }
   };
 
+  const uploadFile = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("formType", "contact");
+
+      const response = await fetch(
+        "https://jswapqasgatjjwgbrsdc.supabase.co/functions/v1/upload-file",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erreur lors de l'upload: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Erreur d'upload:", error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Simulation d'une soumission de formulaire
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Ici, on pourrait envoyer les données à Supabase ou une autre base de données
-      console.log("Form data submitted:", formData);
-      
+      // Données à envoyer à l'API
+      let emailData: any = {
+        company: formData.company,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        requestType: formData.requestType,
+        details: formData.details,
+        urgency: formData.urgency,
+      };
+
+      // Uploader le fichier si présent
+      if (formData.file) {
+        try {
+          const uploadResult = await uploadFile(formData.file);
+          emailData.fileData = {
+            fileName: uploadResult.fileName,
+            fileUrl: uploadResult.fileUrl
+          };
+        } catch (uploadError) {
+          console.error("Erreur lors de l'upload:", uploadError);
+          toast({
+            title: "Erreur lors de l'upload du fichier",
+            description: "Votre demande a été envoyée mais sans la pièce jointe.",
+            variant: "destructive",
+          });
+        }
+      }
+
+      // Enregistrer la demande dans la base de données
+      const { data: contactData, error: contactError } = await supabase
+        .from("contact_requests")
+        .insert({
+          company: formData.company,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          request_type: formData.requestType,
+          details: formData.details,
+          urgency: formData.urgency,
+          file_path: emailData.fileData?.fileUrl || null
+        });
+
+      if (contactError) {
+        console.error("Erreur d'enregistrement en base:", contactError);
+      }
+
+      // Envoyer l'email
+      const response = await fetch(
+        "https://jswapqasgatjjwgbrsdc.supabase.co/functions/v1/send-form-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            formType: "contact",
+            formData: emailData,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Erreur lors de l'envoi du formulaire");
+      }
+
       // Réinitialiser le formulaire
       setFormData({
         company: "",
@@ -55,7 +142,7 @@ export function ContactForm() {
         description: "Nous vous contacterons dans les plus brefs délais.",
       });
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Erreur lors de l'envoi:", error);
       toast({
         title: "Erreur lors de l'envoi",
         description: "Veuillez réessayer ultérieurement.",

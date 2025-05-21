@@ -9,7 +9,114 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      contact_requests: {
+        Row: {
+          company: string
+          created_at: string
+          details: string
+          email: string
+          file_path: string | null
+          id: string
+          name: string
+          phone: string
+          request_type: string
+          urgency: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          details: string
+          email: string
+          file_path?: string | null
+          id?: string
+          name: string
+          phone: string
+          request_type: string
+          urgency: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          details?: string
+          email?: string
+          file_path?: string | null
+          id?: string
+          name?: string
+          phone?: string
+          request_type?: string
+          urgency?: string
+        }
+        Relationships: []
+      }
+      files: {
+        Row: {
+          content_type: string
+          created_at: string
+          file_path: string
+          filename: string
+          id: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          file_path: string
+          filename: string
+          id?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          file_path?: string
+          filename?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      job_applications: {
+        Row: {
+          availability: string
+          created_at: string
+          cv_path: string
+          email: string
+          experience: string
+          full_name: string
+          id: string
+          message: string | null
+          phone: string
+          skills: string
+          software: string
+          status: string
+        }
+        Insert: {
+          availability: string
+          created_at?: string
+          cv_path: string
+          email: string
+          experience: string
+          full_name: string
+          id?: string
+          message?: string | null
+          phone: string
+          skills: string
+          software: string
+          status: string
+        }
+        Update: {
+          availability?: string
+          created_at?: string
+          cv_path?: string
+          email?: string
+          experience?: string
+          full_name?: string
+          id?: string
+          message?: string | null
+          phone?: string
+          skills?: string
+          software?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,1 +1,8 @@
+
 project_id = "jswapqasgatjjwgbrsdc"
+
+[functions.send-form-email]
+verify_jwt = false
+
+[functions.upload-file]
+verify_jwt = false
