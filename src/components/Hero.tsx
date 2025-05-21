@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export function Hero() {
   return (
-    <div className="relative h-screen flex items-center justify-center overflow-hidden">
+    <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Background image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
