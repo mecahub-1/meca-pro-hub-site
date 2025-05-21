@@ -34,6 +34,8 @@ export function ContactForm() {
       formData.append("file", file);
       formData.append("formType", "contact");
 
+      console.log("Uploading file:", file.name);
+      
       const response = await fetch(
         "https://jswapqasgatjjwgbrsdc.supabase.co/functions/v1/upload-file",
         {
@@ -42,11 +44,15 @@ export function ContactForm() {
         }
       );
 
+      const responseData = await response.json();
+      
       if (!response.ok) {
-        throw new Error(`Erreur lors de l'upload: ${response.status}`);
+        console.error("Upload response not OK:", responseData);
+        throw new Error(`Erreur lors de l'upload: ${responseData.error || response.status}`);
       }
 
-      return await response.json();
+      console.log("File upload successful:", responseData);
+      return responseData;
     } catch (error) {
       console.error("Erreur d'upload:", error);
       throw error;
@@ -72,22 +78,35 @@ export function ContactForm() {
       // Uploader le fichier si présent
       if (formData.file) {
         try {
+          console.log("Starting file upload");
           const uploadResult = await uploadFile(formData.file);
-          emailData.fileData = {
-            fileName: uploadResult.fileName,
-            fileUrl: uploadResult.fileUrl
-          };
+          console.log("Upload complete:", uploadResult);
+          
+          if (uploadResult && uploadResult.fileUrl) {
+            emailData.fileData = {
+              fileName: uploadResult.fileName,
+              fileUrl: uploadResult.fileUrl
+            };
+          } else {
+            console.error("Missing file URL in upload result");
+            toast({
+              title: "Erreur lors de l'upload du fichier",
+              description: "Format de réponse incorrect de l'API d'upload.",
+              variant: "destructive",
+            });
+          }
         } catch (uploadError) {
           console.error("Erreur lors de l'upload:", uploadError);
           toast({
             title: "Erreur lors de l'upload du fichier",
-            description: "Votre demande a été envoyée mais sans la pièce jointe.",
+            description: "Votre demande sera envoyée sans la pièce jointe.",
             variant: "destructive",
           });
         }
       }
 
       // Enregistrer la demande dans la base de données
+      console.log("Saving contact request to database");
       const { data: contactData, error: contactError } = await supabase
         .from("contact_requests")
         .insert({
@@ -103,9 +122,13 @@ export function ContactForm() {
 
       if (contactError) {
         console.error("Erreur d'enregistrement en base:", contactError);
+        // Continue anyway to try sending the email
+      } else {
+        console.log("Contact request saved to database");
       }
 
       // Envoyer l'email
+      console.log("Sending email with data:", emailData);
       const response = await fetch(
         "https://jswapqasgatjjwgbrsdc.supabase.co/functions/v1/send-form-email",
         {
@@ -120,9 +143,12 @@ export function ContactForm() {
         }
       );
 
+      const emailResponseData = await response.json();
+      console.log("Email API response:", emailResponseData);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Erreur lors de l'envoi du formulaire");
+        console.error("Email sending failed:", emailResponseData);
+        throw new Error(emailResponseData.error || emailResponseData.details || "Erreur lors de l'envoi du formulaire");
       }
 
       // Réinitialiser le formulaire
@@ -141,11 +167,11 @@ export function ContactForm() {
         title: "Demande envoyée !",
         description: "Nous vous contacterons dans les plus brefs délais.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erreur lors de l'envoi:", error);
       toast({
         title: "Erreur lors de l'envoi",
-        description: "Veuillez réessayer ultérieurement.",
+        description: error.message || "Veuillez réessayer ultérieurement.",
         variant: "destructive",
       });
     } finally {

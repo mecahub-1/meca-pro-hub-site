@@ -20,11 +20,17 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log("Début du traitement de la requête d'upload de fichier");
+    
     const formData = await req.formData();
     const file = formData.get("file") as File;
     const formType = formData.get("formType") as string;
     
+    console.log(`Type de formulaire: ${formType}`);
+    console.log(`Nom du fichier: ${file?.name}`);
+    
     if (!file || !formType) {
+      console.error("Fichier ou type de formulaire manquant");
       return new Response(
         JSON.stringify({ error: "Fichier ou type de formulaire manquant" }),
         {
@@ -41,6 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
     } else if (formType === "job") {
       bucketPath = "cv_uploads";
     } else {
+      console.error("Type de formulaire invalide");
       return new Response(
         JSON.stringify({ error: "Type de formulaire invalide" }),
         {
@@ -54,6 +61,8 @@ const handler = async (req: Request): Promise<Response> => {
     const timestamp = new Date().getTime();
     const fileName = `${timestamp}_${file.name.replace(/\s+/g, '_')}`;
     const filePath = `${bucketPath}/${fileName}`;
+    
+    console.log(`Chemin de fichier: ${filePath}`);
     
     // Convertir le File en ArrayBuffer pour l'upload
     const arrayBuffer = await file.arrayBuffer();
@@ -78,11 +87,15 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log("Fichier uploadé avec succès");
+
     // Obtenir l'URL publique du fichier
     const { data: publicUrlData } = await supabase
       .storage
       .from("files")
       .getPublicUrl(filePath);
+
+    console.log(`URL publique: ${publicUrlData.publicUrl}`);
 
     // Enregistrer les métadonnées du fichier dans la table files
     const { data: insertData, error: insertError } = await supabase
@@ -95,6 +108,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (insertError) {
       console.error("Erreur d'insertion en DB:", insertError);
+    } else {
+      console.log("Métadonnées de fichier enregistrées en base");
     }
 
     return new Response(
