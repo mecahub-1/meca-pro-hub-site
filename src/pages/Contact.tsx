@@ -26,14 +26,7 @@ const Contact = () => {
         <section className="section-padding bg-white dark:bg-gray-800">
           <div className="container-padded">
             <div className="max-w-2xl mx-auto">
-              <Alert className="mb-6">
-                <InfoIcon className="h-4 w-4" />
-                <AlertDescription>
-                  Pour recevoir les emails, l'administrateur doit vérifier un domaine dans Resend.com 
-                  et mettre à jour l'adresse d'expédition.
-                </AlertDescription>
-              </Alert>
-              
+              {/* Enlèvement de l'alerte puisque nous avons résolu le problème d'email */}
               <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-8">
                 <ContactForm />
               </div>
