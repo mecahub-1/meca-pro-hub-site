@@ -1,4 +1,3 @@
-
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Clock, Check, FileText, Shield } from "lucide-react";
@@ -6,33 +5,25 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-
-const commitments = [
-  {
-    icon: Clock,
-    title: "Réactivité opérationnelle",
-    description: "Retour sous 24h pour toute demande de renfort ou devis"
-  },
-  {
-    icon: Check,
-    title: "Compétence éprouvée",
-    description: "Profils validés avec références, autonomie et maîtrise des outils CAO"
-  },
-  {
-    icon: FileText,
-    title: "Livrables normés et clairs",
-    description: "Documentation technique selon vos standards internes (norme ISO)"
-  },
-  {
-    icon: Shield,
-    title: "Discrétion et confidentialité",
-    description: "Engagement contractuel de non-divulgation, même sur site client"
-  }
-];
-
+const commitments = [{
+  icon: Clock,
+  title: "Réactivité opérationnelle",
+  description: "Retour sous 24h pour toute demande de renfort ou devis"
+}, {
+  icon: Check,
+  title: "Compétence éprouvée",
+  description: "Profils validés avec références, autonomie et maîtrise des outils CAO"
+}, {
+  icon: FileText,
+  title: "Livrables normés et clairs",
+  description: "Documentation technique selon vos standards internes (norme ISO)"
+}, {
+  icon: Shield,
+  title: "Discrétion et confidentialité",
+  description: "Engagement contractuel de non-divulgation, même sur site client"
+}];
 const About = () => {
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         {/* Hero Section */}
@@ -53,10 +44,7 @@ const About = () => {
               {/* Left Column - Text Content */}
               <div className="space-y-8">
                 <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-lg font-medium border-l-4 border-mecahub-primary pl-4 italic">
-                    Fondé par un ingénieur expérimenté, MecaHUB Pro est un bureau de prestation technique indépendant, 
-                    spécialisé dans l'externalisation et le renfort d'expertise mécanique.
-                  </p>
+                  <p className="text-lg font-medium border-l-4 border-mecahub-primary pl-4 italic">Fondé par une équipe d'ingénieurs et dessinateur projeteurs, MecaHUB Pro est un bureau de prestation technique indépendant, spécialisé dans l'externalisation et le renfort d'expertise mécanique.</p>
                   
                   <p className="text-gray-700 dark:text-gray-300 my-6">
                     Nous accompagnons les services industriels, bureaux d'études et directions projets 
@@ -80,12 +68,8 @@ const About = () => {
                 {/* Secondary image moved lower to align with commitment cards */}
                 <div className="mx-auto max-w-md lg:max-w-full mt-16 lg:mt-[4.5rem]">
                   <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
-                    <AspectRatio ratio={16/9}>
-                      <img 
-                        src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
-                        alt="Bureau d'étude technique" 
-                        className="object-cover w-full h-full"
-                      />
+                    <AspectRatio ratio={16 / 9}>
+                      <img src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" alt="Bureau d'étude technique" className="object-cover w-full h-full" />
                     </AspectRatio>
                   </div>
                 </div>
@@ -95,12 +79,8 @@ const About = () => {
               <div className="space-y-10">
                 {/* Main Professional Image */}
                 <div className="rounded-lg overflow-hidden shadow-lg">
-                  <AspectRatio ratio={4/3}>
-                    <img 
-                      src="/lovable-uploads/7ebce9b3-aa36-429b-b0e9-9c80245c3f02.png" 
-                      alt="Ingénieurs en situation professionnelle autour d'une maquette 3D" 
-                      className="object-cover w-full h-full"
-                    />
+                  <AspectRatio ratio={4 / 3}>
+                    <img src="/lovable-uploads/7ebce9b3-aa36-429b-b0e9-9c80245c3f02.png" alt="Ingénieurs en situation professionnelle autour d'une maquette 3D" className="object-cover w-full h-full" />
                   </AspectRatio>
                 </div>
                 
@@ -108,8 +88,7 @@ const About = () => {
                 <div>
                   <h2 className="heading-3 mb-6 text-mecahub-contrast dark:text-white">Nos engagements</h2>
                   <div className="grid grid-cols-1 gap-4">
-                    {commitments.map((commitment, index) => (
-                      <Card key={index} className="hover:shadow-md transition-shadow duration-300 border-l-4 border-mecahub-primary">
+                    {commitments.map((commitment, index) => <Card key={index} className="hover:shadow-md transition-shadow duration-300 border-l-4 border-mecahub-primary">
                         <CardContent className="p-5 flex items-start space-x-4">
                           <div className="bg-mecahub-primary/10 p-2 rounded-full">
                             <commitment.icon className="h-6 w-6 text-mecahub-primary" />
@@ -123,8 +102,7 @@ const About = () => {
                             </p>
                           </div>
                         </CardContent>
-                      </Card>
-                    ))}
+                      </Card>)}
                   </div>
                 </div>
               </div>
@@ -154,8 +132,6 @@ const About = () => {
         </section>
       </main>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default About;
