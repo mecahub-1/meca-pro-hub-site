@@ -79,8 +79,8 @@ const About = () => {
               {/* Right Column - Image and Commitments */}
               <div className="space-y-10">
                 {/* Main Professional Image */}
-                <div className="rounded-lg overflow-hidden shadow-lg">
-                  <AspectRatio ratio={4 / 3}>
+                <div className="rounded-lg overflow-hidden shadow-lg h-auto max-h-[400px]">
+                  <AspectRatio ratio={16 / 10} className="h-full">
                     <img src="/lovable-uploads/7ebce9b3-aa36-429b-b0e9-9c80245c3f02.png" alt="Ingénieurs en situation professionnelle autour d'une maquette 3D" className="object-cover w-full h-full" />
                   </AspectRatio>
                 </div>
