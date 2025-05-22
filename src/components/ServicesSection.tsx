@@ -68,7 +68,7 @@ export function ServicesSection() {
         <div className="mb-6">
           <div 
             key={mainService.id}
-            className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all duration-300 flex items-center ${
+            className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all duration-300 flex items-center justify-center ${
               hoveredId === mainService.id ? 'shadow-lg transform -translate-y-1' : ''
             }`}
             onMouseEnter={() => setHoveredId(mainService.id)}
@@ -77,7 +77,7 @@ export function ServicesSection() {
             <div className="mr-4 text-mecahub-primary dark:text-blue-400">
               {mainService.icon}
             </div>
-            <div>
+            <div className="text-center">
               <h3 className="text-lg font-semibold text-mecahub-primary dark:text-white mb-3">
                 {mainService.title}
               </h3>
