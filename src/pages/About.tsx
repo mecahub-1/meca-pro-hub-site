@@ -88,7 +88,7 @@ const About = () => {
             </div>
             
             {/* Nos engagements Section - Full width with dark background like in the reference image */}
-            <div className="mt-16 -mx-4 py-16 px-4 bg-gray-900">
+            <div className="mt-16 -mx-4 py-16 px-4 bg-gray-900 rounded-xl">
               <div className="container mx-auto">
                 <h2 className="text-3xl font-bold text-white text-center mb-12">Nos engagements</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
