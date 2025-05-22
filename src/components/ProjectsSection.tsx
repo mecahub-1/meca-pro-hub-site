@@ -4,7 +4,7 @@ import { useState } from "react";
 const projects = [
   {
     id: 1,
-    title: "Remplacement d'un chargé d'étude dans l'automobile",
+    title: "Remplacement d'un dessinateur projeteur dans l'automobile",
     description: "6 mois en présentiel, gestion complète du dossier technique",
     image: "https://images.unsplash.com/photo-1565043666747-69f6646db940?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
   },
@@ -17,7 +17,7 @@ const projects = [
   {
     id: 3,
     title: "Production d'une liasse complète de plans normalisés ISO",
-    description: "Fabricant de presses hydrauliques (60 plans, 100% à distance)",
+    description: "Plus de 85 plans de détails et des plans d'ensemble pour un fabricant de presses hydrauliques (100% à distance)",
     image: "https://images.unsplash.com/photo-1617302323075-7212202af4c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
   }
 ];
