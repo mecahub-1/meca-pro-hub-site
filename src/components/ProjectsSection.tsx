@@ -18,7 +18,7 @@ const projects = [
     id: 3,
     title: "Production d'une liasse complète de plans normalisés ISO",
     description: "Plus de 85 plans de détails et des plans d'ensemble pour un fabricant de presses hydrauliques (100% à distance)",
-    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+    image: "/lovable-uploads/56f0da4b-20e7-4304-9415-cff4078b1fc4.png"
   }
 ];
 
@@ -57,6 +57,10 @@ export function ProjectsSection() {
               </div>
             </div>
           ))}
+        </div>
+        
+        <div className="text-center mt-10">
+          <p className="text-lg font-medium text-mecahub-primary dark:text-blue-400">Et bien plus encore...</p>
         </div>
       </div>
     </section>
