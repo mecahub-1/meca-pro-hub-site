@@ -11,9 +11,9 @@ const projects = [
   },
   {
     id: 2,
-    title: "Support technique sur site pour une ligne d'assemblage agroalimentaire",
+    title: "Support technique sur site pour une ligne de production agro-alimentaire",
     description: "Réingénierie, validation, mise en plan",
-    image: "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+    image: "/lovable-uploads/6c48a8a4-2b69-403c-bfa0-91b361441ac7.png"
   },
   {
     id: 3,
@@ -44,7 +44,7 @@ export function ProjectsSection() {
               onMouseEnter={() => setActiveProject(project.id)}
               onMouseLeave={() => setActiveProject(null)}
             >
-              {project.id === 3 ? (
+              {project.id === 3 || project.id === 2 ? (
                 <div className="h-64 overflow-hidden">
                   <AspectRatio ratio={4/3} className="h-full">
                     <img 
