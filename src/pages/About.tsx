@@ -6,6 +6,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+
 const commitments = [{
   icon: Clock,
   title: "Réactivité opérationnelle",
@@ -23,6 +24,7 @@ const commitments = [{
   title: "Discrétion et confidentialité",
   description: "Engagement contractuel de non-divulgation, même sur site client"
 }];
+
 const About = () => {
   return <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -82,27 +84,31 @@ const About = () => {
                     <img src="/lovable-uploads/7ebce9b3-aa36-429b-b0e9-9c80245c3f02.png" alt="Ingénieurs en situation professionnelle autour d'une maquette 3D" className="object-cover w-full h-full" />
                   </AspectRatio>
                 </div>
-                
-                {/* Our Commitments Section - Make it wider and centered */}
-                <div className="max-w-3xl mx-auto">
-                  <h2 className="heading-3 mb-6 text-mecahub-contrast dark:text-white text-center">Nos engagements</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {commitments.map((commitment, index) => <Card key={index} className="hover:shadow-md transition-shadow duration-300 border-l-4 border-mecahub-primary">
-                        <CardContent className="p-5 flex items-start space-x-4">
-                          <div className="bg-mecahub-primary/10 p-2 rounded-full">
-                            <commitment.icon className="h-6 w-6 text-mecahub-primary" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-mecahub-contrast dark:text-white">
-                              {commitment.title}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-                              {commitment.description}
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>)}
-                  </div>
+              </div>
+            </div>
+            
+            {/* Nos engagements Section - Full width with dark background like in the reference image */}
+            <div className="mt-16 -mx-4 py-16 px-4 bg-gray-900">
+              <div className="container mx-auto">
+                <h2 className="text-3xl font-bold text-white text-center mb-12">Nos engagements</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                  {commitments.map((commitment, index) => (
+                    <Card key={index} className="bg-gray-800/80 text-white border-0 hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+                      <CardContent className="p-6 flex items-start space-x-4">
+                        <div className="bg-mecahub-primary/20 p-3 rounded-full">
+                          <commitment.icon className="h-6 w-6 text-mecahub-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-xl text-white mb-2">
+                            {commitment.title}
+                          </h3>
+                          <p className="text-gray-300 text-sm">
+                            {commitment.description}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               </div>
             </div>
@@ -133,4 +139,5 @@ const About = () => {
       <Footer />
     </div>;
 };
+
 export default About;
