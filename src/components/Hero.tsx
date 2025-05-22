@@ -1,20 +1,14 @@
-
 import { Link } from "react-router-dom";
-
 export function Hero() {
-  return (
-    <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+  return <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Background image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
-          filter: "brightness(0.8) saturate(1.2)"
-        }}
-      ></div>
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
+      backgroundImage: "url('https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
+      filter: "brightness(0.8) saturate(1.2)"
+    }}></div>
       
       {/* Gradient overlay */}
-      <div className="hero-overlay"></div>
+      <div className="hero-overlay mx-0 px-0 bg-gray-950"></div>
       
       {/* Content */}
       <div className="container relative z-10 px-4 sm:px-6 lg:px-8 text-center mx-auto">
@@ -34,6 +28,5 @@ export function Hero() {
           </Link>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
