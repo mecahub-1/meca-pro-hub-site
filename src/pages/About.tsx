@@ -77,15 +77,17 @@ const About = () => {
                   </p>
                 </div>
                 
-                {/* Secondary image - CAD/Technical drawing */}
-                <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
-                  <AspectRatio ratio={16/9}>
-                    <img 
-                      src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
-                      alt="Bureau d'étude technique" 
-                      className="object-cover w-full h-full"
-                    />
-                  </AspectRatio>
+                {/* Secondary image - CAD/Technical drawing - Centered with same width as commitment cards */}
+                <div className="mx-auto max-w-md lg:max-w-full">
+                  <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
+                    <AspectRatio ratio={16/9}>
+                      <img 
+                        src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
+                        alt="Bureau d'étude technique" 
+                        className="object-cover w-full h-full"
+                      />
+                    </AspectRatio>
+                  </div>
                 </div>
               </div>
               
