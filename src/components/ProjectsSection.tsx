@@ -46,11 +46,11 @@ export function ProjectsSection() {
             >
               {project.id === 3 ? (
                 <div className="h-64 overflow-hidden">
-                  <AspectRatio ratio={16/9} className="h-full">
+                  <AspectRatio ratio={4/3} className="h-full">
                     <img 
                       src={project.image} 
                       alt={project.title} 
-                      className="object-cover w-full h-full object-center"
+                      className="object-cover object-center w-full h-full scale-110"
                     />
                   </AspectRatio>
                 </div>
