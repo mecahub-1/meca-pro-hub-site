@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 const projects = [
   {
@@ -43,12 +44,24 @@ export function ProjectsSection() {
               onMouseEnter={() => setActiveProject(project.id)}
               onMouseLeave={() => setActiveProject(null)}
             >
-              <div 
-                className="h-64 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${project.image})`
-                }}
-              ></div>
+              {project.id === 3 ? (
+                <div className="h-64 overflow-hidden">
+                  <AspectRatio ratio={16/9} className="h-full">
+                    <img 
+                      src={project.image} 
+                      alt={project.title} 
+                      className="object-cover w-full h-full object-center"
+                    />
+                  </AspectRatio>
+                </div>
+              ) : (
+                <div 
+                  className="h-64 bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url(${project.image})`
+                  }}
+                ></div>
+              )}
               <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6 flex flex-col justify-end transition-opacity duration-300 ${
                 activeProject === project.id ? 'opacity-100' : 'opacity-95'
               }`}>
