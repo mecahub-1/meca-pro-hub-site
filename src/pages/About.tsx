@@ -1,3 +1,4 @@
+
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Clock, Check, FileText, Shield } from "lucide-react";
@@ -108,7 +109,7 @@ const About = () => {
             
             {/* Testimonial/Reference Section */}
             <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
-              <div className="max-w-4xl mx-auto bg-mecahub-secondary/50 dark:bg-gray-700/50 p-8 rounded-lg">
+              <div className="max-w-6xl mx-auto bg-mecahub-secondary/50 dark:bg-gray-700/50 p-8 rounded-lg w-full">
                 <div className="flex items-center mb-4">
                   <Badge variant="outline" className="text-mecahub-primary bg-mecahub-primary/10 border-mecahub-primary/20">
                     Nos références
