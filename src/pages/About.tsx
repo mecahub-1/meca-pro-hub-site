@@ -68,9 +68,7 @@ const About = () => {
                 {/* Secondary image moved lower to align with commitment cards */}
                 <div className="mx-auto max-w-md lg:max-w-full mt-16 lg:mt-[4.5rem]">
                   <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
-                    <AspectRatio ratio={16 / 9}>
-                      <img src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" alt="Bureau d'étude technique" className="object-cover w-full h-full" />
-                    </AspectRatio>
+                    
                   </div>
                 </div>
               </div>
