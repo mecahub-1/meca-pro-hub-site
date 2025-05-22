@@ -83,10 +83,10 @@ const About = () => {
                   </AspectRatio>
                 </div>
                 
-                {/* Our Commitments Section */}
-                <div>
-                  <h2 className="heading-3 mb-6 text-mecahub-contrast dark:text-white">Nos engagements</h2>
-                  <div className="grid grid-cols-1 gap-4">
+                {/* Our Commitments Section - Make it wider and centered */}
+                <div className="max-w-3xl mx-auto">
+                  <h2 className="heading-3 mb-6 text-mecahub-contrast dark:text-white text-center">Nos engagements</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {commitments.map((commitment, index) => <Card key={index} className="hover:shadow-md transition-shadow duration-300 border-l-4 border-mecahub-primary">
                         <CardContent className="p-5 flex items-start space-x-4">
                           <div className="bg-mecahub-primary/10 p-2 rounded-full">
