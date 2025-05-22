@@ -17,15 +17,15 @@ export function Hero() {
       <div className="hero-overlay"></div>
       
       {/* Content */}
-      <div className="container relative z-10 px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="animate-fade-in-up heading-1 text-white mb-6 max-w-4xl mx-auto">
+      <div className="container relative z-10 px-4 sm:px-6 lg:px-8 text-center mx-auto">
+        <h1 className="animate-fade-in-up heading-1 text-white mb-6 max-w-4xl mx-auto text-center">
           MecaHUB Pro – Votre renfort technique en ingénierie mécanique.
         </h1>
-        <p className="animate-fade-in-up animation-delay-200 text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+        <p className="animate-fade-in-up animation-delay-200 text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto text-center">
           Nous intervenons directement au sein de vos équipes pour assurer vos projets techniques, 
           combler un besoin temporaire ou externaliser certaines tâches stratégiques.
         </p>
-        <div className="animate-fade-in-up animation-delay-300 flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="animate-fade-in-up animation-delay-300 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link to="/contact" className="btn-primary">
             Demander un devis
           </Link>
