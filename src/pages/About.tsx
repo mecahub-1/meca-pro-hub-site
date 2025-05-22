@@ -103,42 +103,26 @@ const About = () => {
                 </div>
                 
                 {/* Our Commitments Section */}
-                <div className="flex flex-col lg:flex-row gap-8 items-center">
-                  {/* Left side - Image */}
-                  <div className="w-full lg:w-1/3 self-center">
-                    <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
-                      <AspectRatio ratio={1/1}>
-                        <img 
-                          src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81" 
-                          alt="Ingénieur en situation professionnelle" 
-                          className="object-cover w-full h-full"
-                        />
-                      </AspectRatio>
-                    </div>
-                  </div>
-                  
-                  {/* Right side - Commitments */}
-                  <div className="w-full lg:w-2/3">
-                    <h2 className="heading-3 mb-6 text-mecahub-contrast dark:text-white">Nos engagements</h2>
-                    <div className="grid grid-cols-1 gap-4">
-                      {commitments.map((commitment, index) => (
-                        <Card key={index} className="hover:shadow-md transition-shadow duration-300 border-l-4 border-mecahub-primary">
-                          <CardContent className="p-5 flex items-start space-x-4">
-                            <div className="bg-mecahub-primary/10 p-2 rounded-full">
-                              <commitment.icon className="h-6 w-6 text-mecahub-primary" />
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-mecahub-contrast dark:text-white">
-                                {commitment.title}
-                              </h3>
-                              <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-                                {commitment.description}
-                              </p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                <div>
+                  <h2 className="heading-3 mb-6 text-mecahub-contrast dark:text-white">Nos engagements</h2>
+                  <div className="grid grid-cols-1 gap-4">
+                    {commitments.map((commitment, index) => (
+                      <Card key={index} className="hover:shadow-md transition-shadow duration-300 border-l-4 border-mecahub-primary">
+                        <CardContent className="p-5 flex items-start space-x-4">
+                          <div className="bg-mecahub-primary/10 p-2 rounded-full">
+                            <commitment.icon className="h-6 w-6 text-mecahub-primary" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-mecahub-contrast dark:text-white">
+                              {commitment.title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
+                              {commitment.description}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 </div>
               </div>
