@@ -8,7 +8,7 @@ export function Hero() {
     }}></div>
       
       {/* Gradient overlay */}
-      <div className="hero-overlay mx-0 px-0 bg-gray-950"></div>
+      <div className="hero-overlay mx-0 px-0 bg-zinc-50"></div>
       
       {/* Content */}
       <div className="container relative z-10 px-4 sm:px-6 lg:px-8 text-center mx-auto">
