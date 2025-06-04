@@ -1,32 +1,23 @@
-
 import { Link } from "react-router-dom";
-
 export function Hero() {
-  return (
-    <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+  return <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Background image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
-          filter: "brightness(0.7) saturate(1.1)"
-        }}
-      ></div>
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
+      backgroundImage: "url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
+      filter: "brightness(0.7) saturate(1.1)"
+    }}></div>
       
       {/* Gradient overlay with background image */}
-      <div 
-        className="hero-overlay mx-0 px-0" 
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: "0.3"
-        }}
-      ></div>
+      <div className="hero-overlay mx-0 px-0" style={{
+      backgroundImage: "url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      opacity: "0.3"
+    }}></div>
       
       {/* Gradient overlay */}
-      <div className="hero-overlay mx-0 px-0 bg-zinc-50"></div>
+      <div className="hero-overlay mx-0 px-0 bg-transparent"></div>
       
       {/* Content */}
       <div className="container relative z-10 px-4 sm:px-6 lg:px-8 text-center mx-auto">
@@ -46,6 +37,5 @@ export function Hero() {
           </Link>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
