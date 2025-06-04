@@ -13,6 +13,18 @@ export function Hero() {
         }}
       ></div>
       
+      {/* Gradient overlay with background image */}
+      <div 
+        className="hero-overlay mx-0 px-0" 
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: "0.3"
+        }}
+      ></div>
+      
       {/* Gradient overlay */}
       <div className="hero-overlay mx-0 px-0 bg-zinc-50"></div>
       
