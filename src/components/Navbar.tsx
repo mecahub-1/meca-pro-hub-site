@@ -32,14 +32,14 @@ export function Navbar() {
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled || mobileMenuOpen 
-        ? "bg-white/90 backdrop-blur-md shadow-md dark:bg-mecahub-contrast/90" 
+        ? "bg-white/90 backdrop-blur-md shadow-md dark:bg-white/90" 
         : "bg-transparent"
     }`}>
       <nav className="container-padded flex items-center justify-between py-4">
         <div className="flex items-center gap-x-6">
           <Link to="/" className="flex items-center">
             <span className="text-xl font-bold text-mecahub-primary">
-              MecaHUB<span className="text-mecahub-contrast dark:text-white">Pro</span>
+              MecaHUB<span className="text-mecahub-contrast dark:text-mecahub-contrast">Pro</span>
             </span>
           </Link>
         </div>
@@ -54,7 +54,7 @@ export function Navbar() {
                 className={`text-sm font-medium transition-colors hover:text-mecahub-primary ${
                   location.pathname === item.href 
                     ? "text-mecahub-primary" 
-                    : "text-mecahub-contrast dark:text-gray-200"
+                    : "text-mecahub-contrast dark:text-mecahub-contrast"
                 }`}
               >
                 {item.name}
@@ -69,7 +69,7 @@ export function Navbar() {
           <ThemeToggle />
           <button
             type="button"
-            className="ml-2 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200"
+            className="ml-2 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-700"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <span className="sr-only">Toggle menu</span>
@@ -93,7 +93,7 @@ export function Navbar() {
                 className={`block rounded-md py-2 px-3 text-base font-medium ${
                   location.pathname === item.href
                     ? "bg-mecahub-primary/10 text-mecahub-primary"
-                    : "text-mecahub-contrast hover:bg-mecahub-secondary hover:text-mecahub-primary dark:text-gray-200 dark:hover:bg-gray-800"
+                    : "text-mecahub-contrast hover:bg-mecahub-secondary hover:text-mecahub-primary dark:text-mecahub-contrast dark:hover:bg-mecahub-secondary"
                 }`}
               >
                 {item.name}
