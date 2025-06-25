@@ -11,6 +11,7 @@ export function JoinForm() {
     email: "",
     phone: "",
     status: "",
+    position: "",
     skills: "",
     software: "",
     experience: "",
@@ -77,6 +78,7 @@ export function JoinForm() {
         email: formData.email,
         phone: formData.phone,
         status: formData.status,
+        position: formData.position,
         skills: formData.skills,
         software: formData.software,
         experience: formData.experience,
@@ -96,6 +98,7 @@ export function JoinForm() {
           email: formData.email,
           phone: formData.phone,
           status: formData.status,
+          position: formData.position,
           skills: formData.skills,
           software: formData.software,
           experience: formData.experience,
@@ -134,6 +137,7 @@ export function JoinForm() {
         email: "",
         phone: "",
         status: "",
+        position: "",
         skills: "",
         software: "",
         experience: "",
@@ -227,6 +231,32 @@ export function JoinForm() {
             </SelectContent>
           </Select>
         </div>
+      </div>
+      
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Poste à occuper <span className="text-red-500">*</span>
+        </label>
+        <Select
+          value={formData.position}
+          onValueChange={(value) => handleSelectChange("position", value)}
+          required
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Sélectionnez un poste" />
+          </SelectTrigger>
+          <SelectContent className="animate-none">
+            <SelectItem value="dessinateur-projeteur-mecanique">Dessinateur projeteur mécanique</SelectItem>
+            <SelectItem value="ingenieur-mecanique">Ingénieur mécanique</SelectItem>
+            <SelectItem value="technicien-bureau-etudes">Technicien bureau d'études</SelectItem>
+            <SelectItem value="ingenieur-calcul">Ingénieur calcul</SelectItem>
+            <SelectItem value="chef-projet">Chef de projet</SelectItem>
+            <SelectItem value="dessinateur-industriel">Dessinateur industriel</SelectItem>
+            <SelectItem value="ingenieur-conception">Ingénieur conception</SelectItem>
+            <SelectItem value="technicien-cao">Technicien CAO</SelectItem>
+            <SelectItem value="autre">Autre</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <div className="space-y-2">
