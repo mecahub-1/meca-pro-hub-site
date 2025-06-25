@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function JoinForm() {
   const { toast } = useToast();
@@ -19,8 +19,12 @@ export function JoinForm() {
     message: ""
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -205,22 +209,23 @@ export function JoinForm() {
         </div>
         
         <div className="space-y-2">
-          <label htmlFor="status" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Statut <span className="text-red-500">*</span>
           </label>
-          <select
-            id="status"
-            name="status"
-            required
+          <Select
             value={formData.status}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            onValueChange={(value) => handleSelectChange("status", value)}
+            required
           >
-            <option value="">Sélectionnez une option</option>
-            <option value="freelance">Freelance</option>
-            <option value="employee">Salarié</option>
-            <option value="internship">Alternance</option>
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Sélectionnez une option" />
+            </SelectTrigger>
+            <SelectContent className="animate-none">
+              <SelectItem value="freelance">Freelance</SelectItem>
+              <SelectItem value="employee">Salarié</SelectItem>
+              <SelectItem value="internship">Alternance</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       
