@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -345,8 +344,8 @@ export function ContactForm() {
       </button>
       
       <p className="text-sm text-gray-500 dark:text-gray-400">
-        Les données saisies sont utilisées uniquement pour vous recontacter. 
-        Aucun traitement commercial ou externe ne sera effectué.
+        Les données saisies sont utilisées pour établir votre devis et assurer le suivi de votre demande. 
+        Vos informations ne seront pas transmises à des tiers.
       </p>
     </form>
   );
