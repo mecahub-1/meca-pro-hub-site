@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Info } from "lucide-react";
 
 export function ContactForm() {
@@ -19,8 +20,14 @@ export function ContactForm() {
     file: null as File | null
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Effacer les erreurs lorsque l'utilisateur modifie le formulaire
+    setApiError(null);
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Effacer les erreurs lorsque l'utilisateur modifie le formulaire
     setApiError(null);
@@ -269,23 +276,24 @@ export function ContactForm() {
       </div>
       
       <div className="space-y-2">
-        <label htmlFor="requestType" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Objet de la demande <span className="text-red-500">*</span>
         </label>
-        <select
-          id="requestType"
-          name="requestType"
-          required
+        <Select
           value={formData.requestType}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          onValueChange={(value) => handleSelectChange("requestType", value)}
+          required
         >
-          <option value="">Sélectionnez une option</option>
-          <option value="reinforcement">Renfort technique</option>
-          <option value="plans">Mise en plan</option>
-          <option value="study">Étude</option>
-          <option value="other">Autre</option>
-        </select>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Sélectionnez une option" />
+          </SelectTrigger>
+          <SelectContent className="animate-none">
+            <SelectItem value="reinforcement">Renfort technique</SelectItem>
+            <SelectItem value="plans">Mise en plan</SelectItem>
+            <SelectItem value="study">Étude</SelectItem>
+            <SelectItem value="other">Autre</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <div className="space-y-2">
@@ -304,22 +312,23 @@ export function ContactForm() {
       </div>
       
       <div className="space-y-2">
-        <label htmlFor="urgency" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Urgence <span className="text-red-500">*</span>
         </label>
-        <select
-          id="urgency"
-          name="urgency"
-          required
+        <Select
           value={formData.urgency}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          onValueChange={(value) => handleSelectChange("urgency", value)}
+          required
         >
-          <option value="">Sélectionnez une option</option>
-          <option value="immediate">Immédiat</option>
-          <option value="oneWeek">1 semaine</option>
-          <option value="notUrgent">Non urgent</option>
-        </select>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Sélectionnez une option" />
+          </SelectTrigger>
+          <SelectContent className="animate-none">
+            <SelectItem value="immediate">Immédiat</SelectItem>
+            <SelectItem value="oneWeek">1 semaine</SelectItem>
+            <SelectItem value="notUrgent">Non urgent</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <div className="space-y-2">
