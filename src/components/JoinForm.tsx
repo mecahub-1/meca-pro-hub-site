@@ -234,29 +234,19 @@ export function JoinForm() {
       </div>
       
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label htmlFor="position" className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Poste à occuper <span className="text-red-500">*</span>
         </label>
-        <Select
-          value={formData.position}
-          onValueChange={(value) => handleSelectChange("position", value)}
+        <input
+          id="position"
+          name="position"
+          type="text"
           required
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Sélectionnez un poste" />
-          </SelectTrigger>
-          <SelectContent className="animate-none">
-            <SelectItem value="dessinateur-projeteur-mecanique">Dessinateur projeteur mécanique</SelectItem>
-            <SelectItem value="ingenieur-mecanique">Ingénieur mécanique</SelectItem>
-            <SelectItem value="technicien-bureau-etudes">Technicien bureau d'études</SelectItem>
-            <SelectItem value="ingenieur-calcul">Ingénieur calcul</SelectItem>
-            <SelectItem value="chef-projet">Chef de projet</SelectItem>
-            <SelectItem value="dessinateur-industriel">Dessinateur industriel</SelectItem>
-            <SelectItem value="ingenieur-conception">Ingénieur conception</SelectItem>
-            <SelectItem value="technicien-cao">Technicien CAO</SelectItem>
-            <SelectItem value="autre">Autre</SelectItem>
-          </SelectContent>
-        </Select>
+          value={formData.position}
+          onChange={handleChange}
+          placeholder="Ex: Dessinateur projeteur mécanique, Ingénieur mécanique..."
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+        />
       </div>
       
       <div className="space-y-2">
