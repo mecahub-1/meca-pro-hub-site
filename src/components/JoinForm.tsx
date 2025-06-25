@@ -315,7 +315,7 @@ export function JoinForm() {
       
       <div className="space-y-2">
         <label htmlFor="cv" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          CV (format PDF) <span className="text-red-500">*</span>
+          CV ou autres documents (format PDF) <span className="text-red-500">*</span>
         </label>
         <input
           id="cv"
