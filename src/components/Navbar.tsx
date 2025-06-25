@@ -13,7 +13,7 @@ export function Navbar() {
     name: "À propos",
     href: "/about"
   }, {
-    name: "Contact",
+    name: "Demande de devis",
     href: "/contact"
   }, {
     name: "Rejoindre l'équipe",
