@@ -1,14 +1,19 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Info } from "lucide-react";
+import { Info, AlertTriangle } from "lucide-react";
+import { validateFile, sanitizeFilename, FILE_VALIDATION_CONFIGS } from "@/utils/fileValidation";
+import { validateFormData, sanitizeInput, VALIDATION_RULES } from "@/utils/inputValidation";
+import { formSubmissionLimiter, getRateLimitIdentifier } from "@/utils/rateLimiting";
 
 export function ContactForm() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
   const [formData, setFormData] = useState({
     company: "",
     name: "",
@@ -22,21 +27,49 @@ export function ContactForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    // Effacer les erreurs lorsque l'utilisateur modifie le formulaire
+    const sanitizedValue = sanitizeInput(value);
+    setFormData((prev) => ({ ...prev, [name]: sanitizedValue }));
+    
+    // Clear errors when user modifies input
     setApiError(null);
+    if (validationErrors[name]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Effacer les erreurs lorsque l'utilisateur modifie le formulaire
     setApiError(null);
+    if (validationErrors[name]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFormData((prev) => ({ ...prev, file: e.target.files![0] }));
-      // Effacer les erreurs lorsque l'utilisateur modifie le formulaire
+      const file = e.target.files[0];
+      
+      // Validate file immediately
+      const validation = validateFile(file, FILE_VALIDATION_CONFIGS.CONTACT_FILE);
+      if (!validation.isValid) {
+        toast({
+          title: "Fichier invalide",
+          description: validation.error,
+          variant: "destructive",
+        });
+        e.target.value = ''; // Clear the input
+        return;
+      }
+      
+      setFormData((prev) => ({ ...prev, file }));
       setApiError(null);
     }
   };
@@ -61,7 +94,7 @@ export function ContactForm() {
       
       if (!response.ok) {
         console.error("Upload response not OK:", responseData);
-        throw new Error(`Erreur lors de l'upload: ${responseData.error || response.status}`);
+        throw new Error(responseData.error || `Erreur lors de l'upload: ${response.status}`);
       }
 
       console.log("File upload successful:", responseData);
@@ -76,8 +109,55 @@ export function ContactForm() {
     e.preventDefault();
     setIsSubmitting(true);
     setApiError(null);
+    setValidationErrors({});
 
     try {
+      // Rate limiting check
+      const rateLimitId = getRateLimitIdentifier(undefined, formData.email);
+      if (!formSubmissionLimiter.isAllowed(rateLimitId)) {
+        const remainingTime = Math.ceil(formSubmissionLimiter.getRemainingTime(rateLimitId) / 1000);
+        throw new Error(`Trop de tentatives. Réessayez dans ${remainingTime} secondes.`);
+      }
+
+      // Validate all form data
+      const validation = validateFormData({
+        company: formData.company,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        details: formData.details
+      });
+
+      const errors: Record<string, string[]> = {};
+      let hasErrors = false;
+
+      Object.entries(validation).forEach(([field, result]) => {
+        if (!result.isValid) {
+          errors[field] = result.errors;
+          hasErrors = true;
+        }
+      });
+
+      // Validate required select fields
+      if (!formData.requestType) {
+        errors.requestType = ['Ce champ est obligatoire'];
+        hasErrors = true;
+      }
+      if (!formData.urgency) {
+        errors.urgency = ['Ce champ est obligatoire'];
+        hasErrors = true;
+      }
+
+      if (hasErrors) {
+        setValidationErrors(errors);
+        toast({
+          title: "Erreurs de validation",
+          description: "Veuillez corriger les erreurs dans le formulaire.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Données à envoyer à l'API
       let emailData: any = {
         company: formData.company,
@@ -163,7 +243,6 @@ export function ContactForm() {
       if (!response.ok) {
         console.error("Email sending failed:", emailResponseData);
         
-        // FIX: Check if details exists and if it's a string before using includes()
         if (emailResponseData.details && 
             typeof emailResponseData.details === 'string' && 
             emailResponseData.details.includes("L'administrateur doit configurer")) {
@@ -184,6 +263,10 @@ export function ContactForm() {
         urgency: "",
         file: null
       });
+      
+      // Clear file input
+      const fileInput = document.getElementById('file') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
       
       toast({
         title: "Demande envoyée !",
@@ -223,8 +306,16 @@ export function ContactForm() {
             required
             value={formData.company}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
+              validationErrors.company ? 'border-red-500' : 'border-gray-300'
+            }`}
           />
+          {validationErrors.company && (
+            <div className="flex items-center gap-1 text-sm text-red-600">
+              <AlertTriangle className="h-4 w-4" />
+              {validationErrors.company[0]}
+            </div>
+          )}
         </div>
         
         <div className="space-y-2">
@@ -238,8 +329,16 @@ export function ContactForm() {
             required
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
+              validationErrors.name ? 'border-red-500' : 'border-gray-300'
+            }`}
           />
+          {validationErrors.name && (
+            <div className="flex items-center gap-1 text-sm text-red-600">
+              <AlertTriangle className="h-4 w-4" />
+              {validationErrors.name[0]}
+            </div>
+          )}
         </div>
       </div>
       
@@ -255,8 +354,16 @@ export function ContactForm() {
             required
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
+              validationErrors.email ? 'border-red-500' : 'border-gray-300'
+            }`}
           />
+          {validationErrors.email && (
+            <div className="flex items-center gap-1 text-sm text-red-600">
+              <AlertTriangle className="h-4 w-4" />
+              {validationErrors.email[0]}
+            </div>
+          )}
         </div>
         
         <div className="space-y-2">
@@ -270,8 +377,16 @@ export function ContactForm() {
             required
             value={formData.phone}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
+              validationErrors.phone ? 'border-red-500' : 'border-gray-300'
+            }`}
           />
+          {validationErrors.phone && (
+            <div className="flex items-center gap-1 text-sm text-red-600">
+              <AlertTriangle className="h-4 w-4" />
+              {validationErrors.phone[0]}
+            </div>
+          )}
         </div>
       </div>
       
@@ -284,7 +399,7 @@ export function ContactForm() {
           onValueChange={(value) => handleSelectChange("requestType", value)}
           required
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className={`w-full ${validationErrors.requestType ? 'border-red-500' : ''}`}>
             <SelectValue placeholder="Sélectionnez une option" />
           </SelectTrigger>
           <SelectContent className="animate-none">
@@ -294,6 +409,12 @@ export function ContactForm() {
             <SelectItem value="other">Autre</SelectItem>
           </SelectContent>
         </Select>
+        {validationErrors.requestType && (
+          <div className="flex items-center gap-1 text-sm text-red-600">
+            <AlertTriangle className="h-4 w-4" />
+            {validationErrors.requestType[0]}
+          </div>
+        )}
       </div>
       
       <div className="space-y-2">
@@ -307,8 +428,16 @@ export function ContactForm() {
           required
           value={formData.details}
           onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white resize-none"
+          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white resize-none ${
+            validationErrors.details ? 'border-red-500' : 'border-gray-300'
+          }`}
         ></textarea>
+        {validationErrors.details && (
+          <div className="flex items-center gap-1 text-sm text-red-600">
+            <AlertTriangle className="h-4 w-4" />
+            {validationErrors.details[0]}
+          </div>
+        )}
       </div>
       
       <div className="space-y-2">
@@ -320,7 +449,7 @@ export function ContactForm() {
           onValueChange={(value) => handleSelectChange("urgency", value)}
           required
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className={`w-full ${validationErrors.urgency ? 'border-red-500' : ''}`}>
             <SelectValue placeholder="Sélectionnez une option" />
           </SelectTrigger>
           <SelectContent className="animate-none">
@@ -329,19 +458,31 @@ export function ContactForm() {
             <SelectItem value="notUrgent">Non urgent</SelectItem>
           </SelectContent>
         </Select>
+        {validationErrors.urgency && (
+          <div className="flex items-center gap-1 text-sm text-red-600">
+            <AlertTriangle className="h-4 w-4" />
+            {validationErrors.urgency[0]}
+          </div>
+        )}
       </div>
       
       <div className="space-y-2">
         <label htmlFor="file" className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Upload fichier (optionnel)
         </label>
-        <input
-          id="file"
-          name="file"
-          type="file"
-          onChange={handleFileChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-        />
+        <div className="space-y-1">
+          <input
+            id="file"
+            name="file"
+            type="file"
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+            onChange={handleFileChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          />
+          <p className="text-xs text-gray-500">
+            Formats acceptés: PDF, DOC, DOCX, JPG, PNG, GIF (max 5MB)
+          </p>
+        </div>
       </div>
       
       <button

@@ -1,28 +1,5 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.7";
-
-// Use proper environment variable for Resend API key
-const resendApiKey = Deno.env.get("RESEND_API_KEY");
-const recipientEmail = Deno.env.get("RECIPIENT_EMAIL") || "contact@mecahub.fr";
-
-// Log validation of API keys
-console.log(`Resend API key present: ${!!resendApiKey}`);
-console.log(`Recipient email present: ${!!recipientEmail}`);
-
-// Vérifier si les clés API sont présentes
-if (!resendApiKey) {
-  console.error("RESEND_API_KEY environment variable is not set");
-}
-
-// Initialiser Resend uniquement si la clé API est disponible
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
-
-// Création du client Supabase
-const supabaseUrl = "https://jswapqasgatjjwgbrsdc.supabase.co";
-const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,38 +7,54 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-interface ContactFormData {
-  company: string;
-  name: string;
-  email: string;
-  phone: string;
-  requestType: string;
-  details: string;
-  urgency: string;
-  fileData?: {
-    fileName: string;
-    fileUrl: string;
-  };
+// Rate limiting storage
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+function getRateLimitKey(req: Request): string {
+  const forwarded = req.headers.get('x-forwarded-for');
+  const realIp = req.headers.get('x-real-ip');
+  return forwarded || realIp || 'unknown';
 }
 
-interface JobApplicationData {
-  fullName: string;
-  email: string;
-  phone: string;
-  status: string;
-  skills: string;
-  software: string;
-  experience: string;
-  availability: string;
-  cvData?: {
-    fileName: string;
-    fileUrl: string;
-  };
-  message?: string;
+function checkRateLimit(key: string): { allowed: boolean; remainingTime?: number } {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxEmails = 3;
+
+  const entry = rateLimitStore.get(key);
+  
+  if (!entry || now > entry.resetTime) {
+    rateLimitStore.set(key, {
+      count: 1,
+      resetTime: now + windowMs
+    });
+    return { allowed: true };
+  }
+
+  if (entry.count >= maxEmails) {
+    return { 
+      allowed: false, 
+      remainingTime: Math.ceil((entry.resetTime - now) / 1000)
+    };
+  }
+
+  entry.count++;
+  return { allowed: true };
+}
+
+function sanitizeInput(input: string): string {
+  return input
+    .trim()
+    .replace(/[<>]/g, '') // Remove angle brackets to prevent XSS
+    .substring(0, 2000); // Limit length
+}
+
+function validateEmail(email: string): boolean {
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(email) && email.length <= 254;
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -69,29 +62,63 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log("Début du traitement de la requête d'envoi d'email");
     
+    // Rate limiting check
+    const rateLimitKey = getRateLimitKey(req);
+    const rateLimitResult = checkRateLimit(rateLimitKey);
+    
+    if (!rateLimitResult.allowed) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Trop de tentatives d'envoi d'email", 
+          details: `Réessayez dans ${rateLimitResult.remainingTime} secondes` 
+        }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     const { formType, formData } = await req.json();
-    
-    console.log(`Type de formulaire: ${formType}`);
-    console.log("Données du formulaire:", JSON.stringify(formData, null, 2));
-    
+
     if (!formType || !formData) {
-      console.error("Données de formulaire invalides");
       return new Response(
-        JSON.stringify({ error: "Données de formulaire invalides" }),
+        JSON.stringify({ error: "Données manquantes" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
         }
       );
     }
-    
-    // Vérifier si Resend est configuré
-    if (!resend) {
-      console.error("Resend n'est pas configuré - La clé API Resend est manquante");
+
+    // Validate email address
+    if (!validateEmail(formData.email)) {
       return new Response(
-        JSON.stringify({ 
-          error: "Configuration d'envoi d'emails manquante", 
-          details: "L'administrateur doit configurer la clé API Resend." 
+        JSON.stringify({ error: "Adresse email invalide" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Sanitize all text inputs
+    const sanitizedFormData = { ...formData };
+    for (const [key, value] of Object.entries(sanitizedFormData)) {
+      if (typeof value === 'string') {
+        sanitizedFormData[key] = sanitizeInput(value);
+      }
+    }
+
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    const recipientEmail = Deno.env.get("RECIPIENT_EMAIL");
+
+    if (!resendApiKey || !recipientEmail) {
+      console.error("Configuration manquante: RESEND_API_KEY ou RECIPIENT_EMAIL");
+      return new Response(
+        JSON.stringify({
+          error: "Configuration d'envoi d'emails incomplète",
+          details: "L'administrateur doit configurer les paramètres d'envoi d'emails."
         }),
         {
           status: 500,
@@ -99,22 +126,42 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
-    
-    let emailResponse;
-    
-    // Déterminer quel type de formulaire a été soumis et envoyer l'email approprié
+
+    let subject, htmlContent;
+
     if (formType === "contact") {
-      console.log("Envoi d'un email de contact");
-      const contactData = formData as ContactFormData;
-      emailResponse = await sendContactEmail(contactData);
+      subject = `[MecaHUB Pro] Nouvelle demande de contact - ${sanitizedFormData.company}`;
+      htmlContent = `
+        <h2>Nouvelle demande de contact</h2>
+        <p><strong>Entreprise:</strong> ${sanitizedFormData.company}</p>
+        <p><strong>Contact:</strong> ${sanitizedFormData.name}</p>
+        <p><strong>Email:</strong> ${sanitizedFormData.email}</p>
+        <p><strong>Téléphone:</strong> ${sanitizedFormData.phone}</p>
+        <p><strong>Type de demande:</strong> ${sanitizedFormData.requestType}</p>
+        <p><strong>Urgence:</strong> ${sanitizedFormData.urgency}</p>
+        <p><strong>Détails:</strong></p>
+        <p>${sanitizedFormData.details.replace(/\n/g, '<br>')}</p>
+        ${sanitizedFormData.fileData ? `<p><strong>Fichier joint:</strong> <a href="${sanitizedFormData.fileData.fileUrl}">${sanitizedFormData.fileData.fileName}</a></p>` : ''}
+      `;
     } else if (formType === "job") {
-      console.log("Envoi d'un email de candidature");
-      const jobData = formData as JobApplicationData;
-      emailResponse = await sendJobApplicationEmail(jobData);
+      subject = `[MecaHUB Pro] Nouvelle candidature - ${sanitizedFormData.position}`;
+      htmlContent = `
+        <h2>Nouvelle candidature</h2>
+        <p><strong>Nom:</strong> ${sanitizedFormData.fullName}</p>
+        <p><strong>Email:</strong> ${sanitizedFormData.email}</p>
+        <p><strong>Téléphone:</strong> ${sanitizedFormData.phone}</p>
+        <p><strong>Statut:</strong> ${sanitizedFormData.status}</p>
+        <p><strong>Poste souhaité:</strong> ${sanitizedFormData.position}</p>
+        <p><strong>Compétences:</strong> ${sanitizedFormData.skills}</p>
+        <p><strong>Logiciels:</strong> ${sanitizedFormData.software}</p>
+        <p><strong>Expérience:</strong> ${sanitizedFormData.experience}</p>
+        <p><strong>Disponibilité:</strong> ${sanitizedFormData.availability}</p>
+        ${sanitizedFormData.message ? `<p><strong>Message:</strong></p><p>${sanitizedFormData.message.replace(/\n/g, '<br>')}</p>` : ''}
+        <p><strong>CV:</strong> <a href="${sanitizedFormData.cvData.fileUrl}">${sanitizedFormData.cvData.fileName}</a></p>
+      `;
     } else {
-      console.error("Type de formulaire non reconnu");
       return new Response(
-        JSON.stringify({ error: "Type de formulaire non reconnu" }),
+        JSON.stringify({ error: "Type de formulaire invalide" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -122,30 +169,48 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    if (emailResponse.error) {
-      console.error("Erreur lors de l'envoi de l'email:", emailResponse.error);
-      return new Response(
-        JSON.stringify({ 
-          error: "Erreur lors de l'envoi de l'email", 
-          details: emailResponse.error 
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+    console.log("Envoi de l'email via Resend");
+
+    const emailPayload = {
+      from: "MecaHUB Pro <noreply@mecahubpro.com>",
+      to: [recipientEmail],
+      subject: subject,
+      html: htmlContent,
+      reply_to: sanitizedFormData.email,
+    };
+
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify(emailPayload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Erreur Resend:", errorData);
+      throw new Error(`Erreur Resend: ${response.status}`);
     }
 
-    console.log("Email envoyé avec succès:", emailResponse);
+    const result = await response.json();
+    console.log("Email envoyé avec succès:", result);
 
-    return new Response(JSON.stringify({ success: true, data: emailResponse }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
-  } catch (error: any) {
-    console.error("Erreur dans la fonction send-form-email:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ success: true, emailId: result.id }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
+  } catch (error: any) {
+    console.error("Erreur dans send-form-email:", error);
+    return new Response(
+      JSON.stringify({ 
+        error: "Erreur lors de l'envoi de l'email",
+        details: error.message
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -153,113 +218,5 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
-
-async function sendContactEmail(data: ContactFormData) {
-  console.log("Préparation de l'email de contact pour:", data.email);
-  
-  const urgencyMap: Record<string, string> = {
-    immediate: "Immédiat",
-    oneWeek: "1 semaine",
-    notUrgent: "Non urgent",
-  };
-  
-  const requestTypeMap: Record<string, string> = {
-    reinforcement: "Renfort technique",
-    plans: "Mise en plan",
-    study: "Étude",
-    other: "Autre",
-  };
-
-  const fileAttachment = data.fileData ? 
-    `<p><strong>Fichier attaché:</strong> <a href="${data.fileData.fileUrl}">${data.fileData.fileName}</a></p>` : 
-    "";
-
-  try {
-    if (!resend) {
-      return { error: "Service d'envoi d'emails non configuré" };
-    }
-    
-    // Utiliser l'adresse onboarding@resend.dev qui est toujours vérifiée par défaut
-    const result = await resend.emails.send({
-      from: "MecaHUB Pro <onboarding@resend.dev>",
-      to: [recipientEmail],
-      subject: `Nouvelle demande de contact - ${data.company}`,
-      html: `
-        <h1>Nouvelle demande de contact</h1>
-        <h2>Informations du contact</h2>
-        <p><strong>Entreprise:</strong> ${data.company}</p>
-        <p><strong>Nom:</strong> ${data.name}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>Téléphone:</strong> ${data.phone}</p>
-        
-        <h2>Détails de la demande</h2>
-        <p><strong>Type de demande:</strong> ${requestTypeMap[data.requestType] || data.requestType}</p>
-        <p><strong>Urgence:</strong> ${urgencyMap[data.urgency] || data.urgency}</p>
-        <p><strong>Description:</strong></p>
-        <p>${data.details}</p>
-        ${fileAttachment}
-      `,
-    });
-    
-    console.log("Résultat de l'envoi de l'email de contact:", result);
-    return result;
-  } catch (error) {
-    console.error("Erreur lors de l'envoi de l'email de contact:", error);
-    return { error };
-  }
-}
-
-async function sendJobApplicationEmail(data: JobApplicationData) {
-  console.log("Préparation de l'email de candidature pour:", data.email);
-  
-  const statusMap: Record<string, string> = {
-    freelance: "Freelance",
-    employee: "Salarié",
-    internship: "Alternance",
-  };
-
-  const cvAttachment = data.cvData ? 
-    `<p><strong>CV:</strong> <a href="${data.cvData.fileUrl}">${data.cvData.fileName}</a></p>` : 
-    "";
-
-  const messageSection = data.message ? 
-    `<h2>Message</h2><p>${data.message}</p>` : 
-    "";
-
-  try {
-    if (!resend) {
-      return { error: "Service d'envoi d'emails non configuré" };
-    }
-    
-    // Utiliser l'adresse onboarding@resend.dev qui est toujours vérifiée par défaut
-    const result = await resend.emails.send({
-      from: "MecaHUB Pro <onboarding@resend.dev>",
-      to: [recipientEmail],
-      subject: `Nouvelle candidature - ${data.fullName}`,
-      html: `
-        <h1>Nouvelle candidature</h1>
-        <h2>Informations du candidat</h2>
-        <p><strong>Nom:</strong> ${data.fullName}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>Téléphone:</strong> ${data.phone}</p>
-        <p><strong>Statut:</strong> ${statusMap[data.status] || data.status}</p>
-        
-        <h2>Compétences et expérience</h2>
-        <p><strong>Compétences clés:</strong> ${data.skills}</p>
-        <p><strong>Logiciels maîtrisés:</strong> ${data.software}</p>
-        <p><strong>Secteurs d'expérience:</strong> ${data.experience}</p>
-        <p><strong>Disponibilité:</strong> ${data.availability}</p>
-        ${cvAttachment}
-        ${messageSection}
-      `,
-    });
-    
-    console.log("Résultat de l'envoi de l'email de candidature:", result);
-    return result;
-  } catch (error) {
-    console.error("Erreur lors de l'envoi de l'email de candidature:", error);
-    return { error };
-  }
-}
 
 serve(handler);
