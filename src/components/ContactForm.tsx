@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +26,8 @@ export function ContactForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    const sanitizedValue = sanitizeInput(value);
+    // Applique une sanitisation légère seulement pour les champs de texte court
+    const sanitizedValue = name === 'details' ? value : sanitizeInput(value);
     setFormData((prev) => ({ ...prev, [name]: sanitizedValue }));
     
     // Clear errors when user modifies input
@@ -119,13 +119,13 @@ export function ContactForm() {
         throw new Error(`Trop de tentatives. Réessayez dans ${remainingTime} secondes.`);
       }
 
-      // Validate all form data
+      // Validate all form data - sanitise seulement au moment de la soumission
       const validation = validateFormData({
-        company: formData.company,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        details: formData.details
+        company: sanitizeInput(formData.company),
+        name: sanitizeInput(formData.name),
+        email: sanitizeInput(formData.email),
+        phone: sanitizeInput(formData.phone),
+        details: sanitizeInput(formData.details)
       });
 
       const errors: Record<string, string[]> = {};
@@ -158,14 +158,14 @@ export function ContactForm() {
         return;
       }
 
-      // Données à envoyer à l'API
+      // Données à envoyer à l'API - sanitise au moment de l'envoi
       let emailData: any = {
-        company: formData.company,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
+        company: sanitizeInput(formData.company),
+        name: sanitizeInput(formData.name),
+        email: sanitizeInput(formData.email),
+        phone: sanitizeInput(formData.phone),
         requestType: formData.requestType,
-        details: formData.details,
+        details: sanitizeInput(formData.details),
         urgency: formData.urgency,
       };
 

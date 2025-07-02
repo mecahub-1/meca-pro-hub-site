@@ -126,8 +126,8 @@ export function validateFormData(formData: Record<string, string>): Record<strin
 }
 
 export function sanitizeInput(input: string): string {
+  // Sanitisation moins agressive pour permettre la saisie normale
   return input
-    .trim()
-    .replace(/[<>]/g, '') // Remove angle brackets to prevent XSS
-    .substring(0, 2000); // Limit length
+    .replace(/[<>]/g, '') // Supprime seulement les balises dangereuses
+    .substring(0, 2000); // Limite la longueur
 }
