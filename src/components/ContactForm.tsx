@@ -455,7 +455,7 @@ export function ContactForm() {
           <SelectContent className="animate-none">
             <SelectItem value="immediate">Immédiat</SelectItem>
             <SelectItem value="oneWeek">1 semaine</SelectItem>
-            <SelectItem value="notUrgent">Non urgent</SelectItem>
+            <SelectItem value="nextMonths">Dans les prochains mois</SelectItem>
           </SelectContent>
         </Select>
         {validationErrors.urgency && (
