@@ -5,8 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import blogImage from "@/assets/blog-mission-mecahub.jpg";
+import blogImageRD from "@/assets/blog-integration-rd.jpg";
 
 const blogPosts = [
+  {
+    id: 2,
+    title: "Intégration réussie d'un expert en R&D : quand le bon profil transforme une mission en succès durable",
+    excerpt: "Découvrez comment un expert MECAHUB PRO s'est parfaitement intégré dans une équipe R&D, transformant une mission temporaire en collaboration durable.",
+    image: blogImageRD,
+    date: "2025-01-25",
+    readTime: "7 min",
+    category: "Cas client",
+    slug: "integration-reussie-expert-rd-profil-transforme-mission-succes-durable"
+  },
   {
     id: 1,
     title: "Comment se déroule une mission avec MECAHUB PRO ?",

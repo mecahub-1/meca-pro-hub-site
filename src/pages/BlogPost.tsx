@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import blogImage from "@/assets/blog-mission-mecahub.jpg";
+import blogImageRD from "@/assets/blog-integration-rd.jpg";
 
 const blogPosts = {
   "comment-se-deroule-une-mission-mecahub-pro": {
@@ -81,6 +82,75 @@ Nous pouvons vous aider.
 
 📩 Contact : contact@mecahub-pro.fr  
 🌐 En savoir plus : www.mecahub-pro.fr
+    `
+  },
+  "integration-reussie-expert-rd-profil-transforme-mission-succes-durable": {
+    title: "Intégration réussie d'un expert en R&D : quand le bon profil transforme une mission en succès durable",
+    subtitle: "Contexte : un projet R&D stratégique mais une équipe à effectif constant",
+    image: blogImageRD,
+    date: "2025-01-25",
+    readTime: "7 min",
+    category: "Cas client",
+    content: `
+Une entreprise industrielle spécialisée dans les équipements de haute précision préparait un nouveau produit en R&D, avec des enjeux forts en termes de conception, fiabilité et délai.
+
+❗ Le problème : l'entreprise ne souhaitait pas agrandir son équipe en interne à ce stade du développement, pour des raisons de charge variable, de budget, et de stratégie RH.
+
+Pour avancer sans perturber son organisation, elle a fait appel à MECAHUB PRO afin de renforcer son bureau d'études avec un intervenant externe, pour une mission initiale de 8 mois.
+
+## 🎯 Objectif de la mission
+
+- Intervenir en interne au sein du BE, 5 jours par semaine
+- Travailler sur la conception complète d'un sous-système mécanique
+- Participer aux choix techniques, aux revues de conception, à l'optimisation du design
+- S'intégrer pleinement à l'équipe R&D sans créer de rupture de méthode ou de communication
+
+## 👨‍💻 Notre solution : un expert technique parfaitement intégré
+
+MECAHUB PRO a proposé un profil technique solide, maîtrisant parfaitement les outils CAO utilisés par le client et avec une excellente capacité d'adaptation aux environnements industriels exigeants.
+
+Dès la première semaine :
+
+- Le consultant s'est intégré naturellement dans les rituels de l'équipe
+- Il a adopté les méthodes et outils internes du BE
+- Il a apporté des idées neuves et structurées, sans perturber les process existants
+
+> "On avait l'impression qu'il faisait partie de l'équipe depuis des années. Il posait les bonnes questions, avançait sans blocage, et restait aligné avec notre logique de développement."
+> — Chef de projet R&D
+
+## 📆 Une mission prolongée, puis convertie en CDI
+
+Initialement prévue pour 8 mois, la mission a été prolongée de 7 mois supplémentaires.
+
+Pourquoi ?
+➡️ Parce que l'expert apportait une vraie valeur métier,
+➡️ Parce qu'il participait à la transmission d'informations techniques,
+➡️ Et surtout, parce que son comportement professionnel et sa rigueur inspiraient confiance.
+
+Finalement, le client a proposé un CDI, que le consultant a accepté après accord tripartite.
+
+> "Ce n'était pas prévu. Mais à force de travailler avec lui, la question s'est posée naturellement. C'était devenu un élément structurant de notre équipe R&D."
+
+## 🔍 Ce qu'il faut retenir
+
+- Un prestataire externe bien sélectionné peut s'intégrer aussi bien qu'un salarié, sans perturber l'équilibre interne.
+- Il est possible de faire avancer un projet ambitieux tout en gardant la souplesse d'une mission, sans engagement RH initial.
+- Et quand la mission devient stratégique, rien n'empêche une collaboration long terme, y compris une embauche si les deux parties le souhaitent.
+
+## 🛠️ Notre rôle chez MECAHUB PRO
+
+Nous ne proposons pas "des CV".
+Nous plaçons des experts fiables, professionnels, adaptés à vos contraintes, capables :
+
+- De s'intégrer à vos équipes,
+- D'être efficaces rapidement,
+- Et de vous faire gagner du temps, sans désorganiser vos équipes internes.
+
+📩 Vous avez un projet stratégique mais pas les ressources en interne ?
+Vous souhaitez renforcer votre bureau d'études sans alourdir votre structure ?
+
+➡️ Contactez-nous : contact@mecahub-pro.fr
+➡️ En savoir plus : www.mecahub-pro.fr
     `
   }
 };
