@@ -16,9 +16,6 @@ export function Navbar() {
     name: "À propos",
     href: "/about"
   }, {
-    name: "Blog",
-    href: "/blog"
-  }, {
     name: "Demande de devis",
     href: "/contact"
   }, {
