@@ -79,8 +79,8 @@ Nous apportons une solution concrète, calibrée, fiable, pour vous faire gagner
 Vous avez un besoin ponctuel ? Un projet à lancer rapidement ?
 Nous pouvons vous aider.
 
-**📩 Contact :** contact@mecahub-pro.fr  
-**🌐 En savoir plus :** www.mecahub-pro.fr
+📩 Contact : contact@mecahub-pro.fr  
+🌐 En savoir plus : www.mecahub-pro.fr
     `
   }
 };
