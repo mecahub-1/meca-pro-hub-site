@@ -31,6 +31,14 @@ export function JoinForm() {
     message: ""
   });
 
+  // États pour les cases "Autres"
+  const [otherChecked, setOtherChecked] = useState({
+    position: false,
+    skills: false,
+    software: false,
+    experience: false
+  });
+
   // Options pour les cases à cocher
   const positionOptions = [
     "Dessinateur projeteur mécanique",
@@ -341,6 +349,14 @@ export function JoinForm() {
         message: ""
       });
       
+      // Réinitialiser les états des cases "Autres"
+      setOtherChecked({
+        position: false,
+        skills: false,
+        software: false,
+        experience: false
+      });
+      
       // Clear file input
       const fileInput = document.getElementById('cv') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
@@ -485,15 +501,10 @@ export function JoinForm() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="position-other"
-              checked={!!formData.positionOther}
+              checked={otherChecked.position}
               onCheckedChange={(checked) => {
-                if (checked) {
-                  // Focus sur le champ texte quand on coche
-                  setTimeout(() => {
-                    const input = document.querySelector('input[placeholder="Précisez..."]') as HTMLInputElement;
-                    if (input) input.focus();
-                  }, 100);
-                } else {
+                setOtherChecked(prev => ({ ...prev, position: checked as boolean }));
+                if (!checked) {
                   setFormData(prev => ({ ...prev, positionOther: "" }));
                 }
               }}
@@ -502,13 +513,14 @@ export function JoinForm() {
               Autres:
             </label>
           </div>
-          {!!formData.positionOther && (
+          {otherChecked.position && (
             <input
               type="text"
               placeholder="Précisez..."
               value={formData.positionOther}
               onChange={(e) => setFormData(prev => ({ ...prev, positionOther: e.target.value }))}
               className="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              autoFocus
             />
           )}
         </div>
@@ -543,15 +555,10 @@ export function JoinForm() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="skills-other"
-              checked={!!formData.skillsOther}
+              checked={otherChecked.skills}
               onCheckedChange={(checked) => {
-                if (checked) {
-                  setTimeout(() => {
-                    const inputs = document.querySelectorAll('input[placeholder="Précisez..."]');
-                    const skillsInput = inputs[1] as HTMLInputElement;
-                    if (skillsInput) skillsInput.focus();
-                  }, 100);
-                } else {
+                setOtherChecked(prev => ({ ...prev, skills: checked as boolean }));
+                if (!checked) {
                   setFormData(prev => ({ ...prev, skillsOther: "" }));
                 }
               }}
@@ -560,13 +567,14 @@ export function JoinForm() {
               Autres:
             </label>
           </div>
-          {!!formData.skillsOther && (
+          {otherChecked.skills && (
             <input
               type="text"
               placeholder="Précisez..."
               value={formData.skillsOther}
               onChange={(e) => setFormData(prev => ({ ...prev, skillsOther: e.target.value }))}
               className="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              autoFocus
             />
           )}
         </div>
@@ -601,15 +609,10 @@ export function JoinForm() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="software-other"
-              checked={!!formData.softwareOther}
+              checked={otherChecked.software}
               onCheckedChange={(checked) => {
-                if (checked) {
-                  setTimeout(() => {
-                    const inputs = document.querySelectorAll('input[placeholder="Précisez..."]');
-                    const softwareInput = inputs[2] as HTMLInputElement;
-                    if (softwareInput) softwareInput.focus();
-                  }, 100);
-                } else {
+                setOtherChecked(prev => ({ ...prev, software: checked as boolean }));
+                if (!checked) {
                   setFormData(prev => ({ ...prev, softwareOther: "" }));
                 }
               }}
@@ -618,13 +621,14 @@ export function JoinForm() {
               Autres:
             </label>
           </div>
-          {!!formData.softwareOther && (
+          {otherChecked.software && (
             <input
               type="text"
               placeholder="Précisez..."
               value={formData.softwareOther}
               onChange={(e) => setFormData(prev => ({ ...prev, softwareOther: e.target.value }))}
               className="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              autoFocus
             />
           )}
         </div>
@@ -659,15 +663,10 @@ export function JoinForm() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="experience-other"
-              checked={!!formData.experienceOther}
+              checked={otherChecked.experience}
               onCheckedChange={(checked) => {
-                if (checked) {
-                  setTimeout(() => {
-                    const inputs = document.querySelectorAll('input[placeholder="Précisez..."]');
-                    const experienceInput = inputs[3] as HTMLInputElement;
-                    if (experienceInput) experienceInput.focus();
-                  }, 100);
-                } else {
+                setOtherChecked(prev => ({ ...prev, experience: checked as boolean }));
+                if (!checked) {
                   setFormData(prev => ({ ...prev, experienceOther: "" }));
                 }
               }}
@@ -676,13 +675,14 @@ export function JoinForm() {
               Autres:
             </label>
           </div>
-          {!!formData.experienceOther && (
+          {otherChecked.experience && (
             <input
               type="text"
               placeholder="Précisez..."
               value={formData.experienceOther}
               onChange={(e) => setFormData(prev => ({ ...prev, experienceOther: e.target.value }))}
               className="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              autoFocus
             />
           )}
         </div>
