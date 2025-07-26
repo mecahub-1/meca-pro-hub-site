@@ -87,7 +87,7 @@ Nous pouvons vous aider.
   "integration-reussie-expert-rd-profil-transforme-mission-succes-durable": {
     title: "Intégration réussie d'un expert en R&D : quand le bon profil transforme une mission en succès durable",
     subtitle: "Contexte : un projet R&D stratégique mais une équipe à effectif constant",
-    image: blogImageRD,
+    image: "/lovable-uploads/230311eb-752a-4b7f-9325-ba59bf0e6750.png",
     date: "2025-01-25",
     readTime: "7 min",
     category: "Cas client",
