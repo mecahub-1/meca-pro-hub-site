@@ -12,7 +12,7 @@ const blogPosts = [
     id: 2,
     title: "Intégration réussie d'un expert en R&D : quand le bon profil transforme une mission en succès durable",
     excerpt: "Découvrez comment un expert MECAHUB PRO s'est parfaitement intégré dans une équipe R&D, transformant une mission temporaire en collaboration durable.",
-    image: "/lovable-uploads/230311eb-752a-4b7f-9325-ba59bf0e6750.png",
+    image: "/lovable-uploads/9c0f76a7-0f10-49dc-ac6d-838c02a5710e.png",
     date: "2025-01-25",
     readTime: "7 min",
     category: "Cas client",
