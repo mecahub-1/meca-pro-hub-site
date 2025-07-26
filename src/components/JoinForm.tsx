@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { AlertTriangle } from "lucide-react";
 import { validateFile, sanitizeFilename, FILE_VALIDATION_CONFIGS } from "@/utils/fileValidation";
 import { validateFormData, sanitizeInput, VALIDATION_RULES } from "@/utils/inputValidation";
@@ -17,14 +18,80 @@ export function JoinForm() {
     email: "",
     phone: "",
     status: "",
-    position: "",
-    skills: "",
-    software: "",
-    experience: "",
+    position: [] as string[],
+    positionOther: "",
+    skills: [] as string[],
+    skillsOther: "",
+    software: [] as string[],
+    softwareOther: "",
+    experience: [] as string[],
+    experienceOther: "",
     availability: "",
     cv: null as File | null,
     message: ""
   });
+
+  // Options pour les cases à cocher
+  const positionOptions = [
+    "Dessinateur projeteur mécanique",
+    "Ingénieur mécanique",
+    "Ingénieur calcul/simulation",
+    "Chef de projet mécanique",
+    "Responsable bureau d'études",
+    "Technicien mécanique",
+    "Ingénieur R&D",
+    "Concepteur 3D",
+    "Ingénieur produit"
+  ];
+
+  const skillsOptions = [
+    "Conception mécanique",
+    "Calcul de structures",
+    "Simulation numérique (FEM)",
+    "Analyse des contraintes",
+    "Mécanique des fluides (CFD)",
+    "Thermodynamique",
+    "Résistance des matériaux",
+    "Assemblage mécanique",
+    "Tolérancement dimensionnel",
+    "Gestion de projet",
+    "Prototypage",
+    "Validation expérimentale"
+  ];
+
+  const softwareOptions = [
+    "SolidWorks",
+    "Catia V5/V6",
+    "AutoCAD",
+    "Inventor",
+    "Creo/Pro-E",
+    "NX (Unigraphics)",
+    "Fusion 360",
+    "Ansys",
+    "Abaqus",
+    "Comsol",
+    "Matlab/Simulink",
+    "SolidWorks Simulation",
+    "KeyShot",
+    "3ds Max/Maya"
+  ];
+
+  const experienceOptions = [
+    "Automobile",
+    "Aéronautique",
+    "Agroalimentaire",
+    "Energie/Pétrole",
+    "Ferroviaire",
+    "Naval/Maritime",
+    "Médical/Pharmaceutique",
+    "Électronique/High-tech",
+    "Bâtiment/Construction",
+    "Machines spéciales",
+    "Métallurgie",
+    "Plasturgie",
+    "Packaging",
+    "Robotique/Automatisme"
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -47,6 +114,26 @@ export function JoinForm() {
       setValidationErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleCheckboxChange = (field: 'position' | 'skills' | 'software' | 'experience', value: string, checked: boolean) => {
+    setFormData((prev) => {
+      const currentArray = prev[field] as string[];
+      const newArray = checked 
+        ? [...currentArray, value]
+        : currentArray.filter(item => item !== value);
+      
+      return { ...prev, [field]: newArray };
+    });
+    
+    // Clear errors when user modifies input
+    if (validationErrors[field]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
         return newErrors;
       });
     }
@@ -111,15 +198,32 @@ export function JoinForm() {
         throw new Error(`Trop de tentatives. Réessayez dans ${remainingTime} secondes.`);
       }
 
+      // Convert arrays to strings and combine with "other" fields
+      const positionString = formData.position.length > 0 
+        ? [...formData.position, ...(formData.positionOther ? [formData.positionOther] : [])].join(', ')
+        : formData.positionOther;
+      
+      const skillsString = formData.skills.length > 0 
+        ? [...formData.skills, ...(formData.skillsOther ? [formData.skillsOther] : [])].join(', ')
+        : formData.skillsOther;
+      
+      const softwareString = formData.software.length > 0 
+        ? [...formData.software, ...(formData.softwareOther ? [formData.softwareOther] : [])].join(', ')
+        : formData.softwareOther;
+      
+      const experienceString = formData.experience.length > 0 
+        ? [...formData.experience, ...(formData.experienceOther ? [formData.experienceOther] : [])].join(', ')
+        : formData.experienceOther;
+
       // Validate all form data
       const validation = validateFormData({
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
-        position: formData.position,
-        skills: formData.skills,
-        software: formData.software,
-        experience: formData.experience,
+        position: positionString,
+        skills: skillsString,
+        software: softwareString,
+        experience: experienceString,
         availability: formData.availability,
         message: formData.message
       });
@@ -165,10 +269,10 @@ export function JoinForm() {
         email: formData.email,
         phone: formData.phone,
         status: formData.status,
-        position: formData.position,
-        skills: formData.skills,
-        software: formData.software,
-        experience: formData.experience,
+        position: positionString,
+        skills: skillsString,
+        software: softwareString,
+        experience: experienceString,
         availability: formData.availability,
         message: formData.message,
         cvData: {
@@ -185,10 +289,10 @@ export function JoinForm() {
           email: formData.email,
           phone: formData.phone,
           status: formData.status,
-          position: formData.position,
-          skills: formData.skills,
-          software: formData.software,
-          experience: formData.experience,
+          position: positionString,
+          skills: skillsString,
+          software: softwareString,
+          experience: experienceString,
           availability: formData.availability,
           message: formData.message,
           cv_path: uploadResult.fileUrl
@@ -224,10 +328,14 @@ export function JoinForm() {
         email: "",
         phone: "",
         status: "",
-        position: "",
-        skills: "",
-        software: "",
-        experience: "",
+        position: [] as string[],
+        positionOther: "",
+        skills: [] as string[],
+        skillsOther: "",
+        software: [] as string[],
+        softwareOther: "",
+        experience: [] as string[],
+        experienceOther: "",
         availability: "",
         cv: null,
         message: ""
@@ -355,21 +463,49 @@ export function JoinForm() {
       </div>
       
       <div className="space-y-2">
-        <label htmlFor="position" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Poste à occuper <span className="text-red-500">*</span>
         </label>
-        <input
-          id="position"
-          name="position"
-          type="text"
-          required
-          value={formData.position}
-          onChange={handleChange}
-          placeholder="Ex: Dessinateur projeteur mécanique, Ingénieur mécanique..."
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
-            validationErrors.position ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 border rounded-md dark:border-gray-700">
+          {positionOptions.map((option) => (
+            <div key={option} className="flex items-center space-x-2">
+              <Checkbox
+                id={`position-${option}`}
+                checked={formData.position.includes(option)}
+                onCheckedChange={(checked) => handleCheckboxChange('position', option, checked as boolean)}
+              />
+              <label
+                htmlFor={`position-${option}`}
+                className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+              >
+                {option}
+              </label>
+            </div>
+          ))}
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="position-other"
+              checked={!!formData.positionOther}
+              onCheckedChange={(checked) => {
+                if (!checked) {
+                  setFormData(prev => ({ ...prev, positionOther: "" }));
+                }
+              }}
+            />
+            <label htmlFor="position-other" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              Autres:
+            </label>
+          </div>
+          {(formData.positionOther !== "" || formData.position.includes("Autres")) && (
+            <input
+              type="text"
+              placeholder="Précisez..."
+              value={formData.positionOther}
+              onChange={(e) => setFormData(prev => ({ ...prev, positionOther: e.target.value }))}
+              className="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            />
+          )}
+        </div>
         {validationErrors.position && (
           <div className="flex items-center gap-1 text-sm text-red-600">
             <AlertTriangle className="h-4 w-4" />
@@ -379,21 +515,49 @@ export function JoinForm() {
       </div>
       
       <div className="space-y-2">
-        <label htmlFor="skills" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Compétences clés <span className="text-red-500">*</span>
         </label>
-        <input
-          id="skills"
-          name="skills"
-          type="text"
-          required
-          value={formData.skills}
-          onChange={handleChange}
-          placeholder="Ex: Conception mécanique, simulation, calcul de structures..."
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
-            validationErrors.skills ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 border rounded-md dark:border-gray-700">
+          {skillsOptions.map((option) => (
+            <div key={option} className="flex items-center space-x-2">
+              <Checkbox
+                id={`skills-${option}`}
+                checked={formData.skills.includes(option)}
+                onCheckedChange={(checked) => handleCheckboxChange('skills', option, checked as boolean)}
+              />
+              <label
+                htmlFor={`skills-${option}`}
+                className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+              >
+                {option}
+              </label>
+            </div>
+          ))}
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="skills-other"
+              checked={!!formData.skillsOther}
+              onCheckedChange={(checked) => {
+                if (!checked) {
+                  setFormData(prev => ({ ...prev, skillsOther: "" }));
+                }
+              }}
+            />
+            <label htmlFor="skills-other" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              Autres:
+            </label>
+          </div>
+          {(formData.skillsOther !== "" || formData.skills.includes("Autres")) && (
+            <input
+              type="text"
+              placeholder="Précisez..."
+              value={formData.skillsOther}
+              onChange={(e) => setFormData(prev => ({ ...prev, skillsOther: e.target.value }))}
+              className="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            />
+          )}
+        </div>
         {validationErrors.skills && (
           <div className="flex items-center gap-1 text-sm text-red-600">
             <AlertTriangle className="h-4 w-4" />
@@ -403,21 +567,49 @@ export function JoinForm() {
       </div>
       
       <div className="space-y-2">
-        <label htmlFor="software" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Logiciels maîtrisés <span className="text-red-500">*</span>
         </label>
-        <input
-          id="software"
-          name="software"
-          type="text"
-          required
-          value={formData.software}
-          onChange={handleChange}
-          placeholder="Ex: SolidWorks, Catia V5, AutoCAD..."
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
-            validationErrors.software ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 border rounded-md dark:border-gray-700">
+          {softwareOptions.map((option) => (
+            <div key={option} className="flex items-center space-x-2">
+              <Checkbox
+                id={`software-${option}`}
+                checked={formData.software.includes(option)}
+                onCheckedChange={(checked) => handleCheckboxChange('software', option, checked as boolean)}
+              />
+              <label
+                htmlFor={`software-${option}`}
+                className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+              >
+                {option}
+              </label>
+            </div>
+          ))}
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="software-other"
+              checked={!!formData.softwareOther}
+              onCheckedChange={(checked) => {
+                if (!checked) {
+                  setFormData(prev => ({ ...prev, softwareOther: "" }));
+                }
+              }}
+            />
+            <label htmlFor="software-other" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              Autres:
+            </label>
+          </div>
+          {(formData.softwareOther !== "" || formData.software.includes("Autres")) && (
+            <input
+              type="text"
+              placeholder="Précisez..."
+              value={formData.softwareOther}
+              onChange={(e) => setFormData(prev => ({ ...prev, softwareOther: e.target.value }))}
+              className="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            />
+          )}
+        </div>
         {validationErrors.software && (
           <div className="flex items-center gap-1 text-sm text-red-600">
             <AlertTriangle className="h-4 w-4" />
@@ -427,21 +619,49 @@ export function JoinForm() {
       </div>
       
       <div className="space-y-2">
-        <label htmlFor="experience" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Secteurs d'expérience <span className="text-red-500">*</span>
         </label>
-        <input
-          id="experience"
-          name="experience"
-          type="text"
-          required
-          value={formData.experience}
-          onChange={handleChange}
-          placeholder="Ex: Automobile, Aéronautique, Agroalimentaire..."
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
-            validationErrors.experience ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 border rounded-md dark:border-gray-700">
+          {experienceOptions.map((option) => (
+            <div key={option} className="flex items-center space-x-2">
+              <Checkbox
+                id={`experience-${option}`}
+                checked={formData.experience.includes(option)}
+                onCheckedChange={(checked) => handleCheckboxChange('experience', option, checked as boolean)}
+              />
+              <label
+                htmlFor={`experience-${option}`}
+                className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+              >
+                {option}
+              </label>
+            </div>
+          ))}
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="experience-other"
+              checked={!!formData.experienceOther}
+              onCheckedChange={(checked) => {
+                if (!checked) {
+                  setFormData(prev => ({ ...prev, experienceOther: "" }));
+                }
+              }}
+            />
+            <label htmlFor="experience-other" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              Autres:
+            </label>
+          </div>
+          {(formData.experienceOther !== "" || formData.experience.includes("Autres")) && (
+            <input
+              type="text"
+              placeholder="Précisez..."
+              value={formData.experienceOther}
+              onChange={(e) => setFormData(prev => ({ ...prev, experienceOther: e.target.value }))}
+              className="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-mecahub-primary dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            />
+          )}
+        </div>
         {validationErrors.experience && (
           <div className="flex items-center gap-1 text-sm text-red-600">
             <AlertTriangle className="h-4 w-4" />
