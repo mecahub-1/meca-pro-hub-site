@@ -487,7 +487,13 @@ export function JoinForm() {
               id="position-other"
               checked={!!formData.positionOther}
               onCheckedChange={(checked) => {
-                if (!checked) {
+                if (checked) {
+                  // Focus sur le champ texte quand on coche
+                  setTimeout(() => {
+                    const input = document.querySelector('input[placeholder="Précisez..."]') as HTMLInputElement;
+                    if (input) input.focus();
+                  }, 100);
+                } else {
                   setFormData(prev => ({ ...prev, positionOther: "" }));
                 }
               }}
@@ -496,7 +502,7 @@ export function JoinForm() {
               Autres:
             </label>
           </div>
-          {(formData.positionOther !== "" || formData.position.includes("Autres")) && (
+          {!!formData.positionOther && (
             <input
               type="text"
               placeholder="Précisez..."
@@ -539,7 +545,13 @@ export function JoinForm() {
               id="skills-other"
               checked={!!formData.skillsOther}
               onCheckedChange={(checked) => {
-                if (!checked) {
+                if (checked) {
+                  setTimeout(() => {
+                    const inputs = document.querySelectorAll('input[placeholder="Précisez..."]');
+                    const skillsInput = inputs[1] as HTMLInputElement;
+                    if (skillsInput) skillsInput.focus();
+                  }, 100);
+                } else {
                   setFormData(prev => ({ ...prev, skillsOther: "" }));
                 }
               }}
@@ -548,7 +560,7 @@ export function JoinForm() {
               Autres:
             </label>
           </div>
-          {(formData.skillsOther !== "" || formData.skills.includes("Autres")) && (
+          {!!formData.skillsOther && (
             <input
               type="text"
               placeholder="Précisez..."
@@ -591,7 +603,13 @@ export function JoinForm() {
               id="software-other"
               checked={!!formData.softwareOther}
               onCheckedChange={(checked) => {
-                if (!checked) {
+                if (checked) {
+                  setTimeout(() => {
+                    const inputs = document.querySelectorAll('input[placeholder="Précisez..."]');
+                    const softwareInput = inputs[2] as HTMLInputElement;
+                    if (softwareInput) softwareInput.focus();
+                  }, 100);
+                } else {
                   setFormData(prev => ({ ...prev, softwareOther: "" }));
                 }
               }}
@@ -600,7 +618,7 @@ export function JoinForm() {
               Autres:
             </label>
           </div>
-          {(formData.softwareOther !== "" || formData.software.includes("Autres")) && (
+          {!!formData.softwareOther && (
             <input
               type="text"
               placeholder="Précisez..."
@@ -643,7 +661,13 @@ export function JoinForm() {
               id="experience-other"
               checked={!!formData.experienceOther}
               onCheckedChange={(checked) => {
-                if (!checked) {
+                if (checked) {
+                  setTimeout(() => {
+                    const inputs = document.querySelectorAll('input[placeholder="Précisez..."]');
+                    const experienceInput = inputs[3] as HTMLInputElement;
+                    if (experienceInput) experienceInput.focus();
+                  }, 100);
+                } else {
                   setFormData(prev => ({ ...prev, experienceOther: "" }));
                 }
               }}
@@ -652,7 +676,7 @@ export function JoinForm() {
               Autres:
             </label>
           </div>
-          {(formData.experienceOther !== "" || formData.experience.includes("Autres")) && (
+          {!!formData.experienceOther && (
             <input
               type="text"
               placeholder="Précisez..."
