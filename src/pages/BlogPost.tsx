@@ -11,7 +11,7 @@ const blogPosts = {
   "comment-se-deroule-une-mission-mecahub-pro": {
     title: "Comment se déroule une mission avec MECAHUB PRO ?",
     subtitle: "Une méthode simple, claire et structurée",
-    image: blogImage,
+    image: "/lovable-uploads/43a485ed-8e45-427e-a3a9-41dee32f88fb.png",
     date: "2025-01-22",
     readTime: "5 min",
     category: "Méthode",
