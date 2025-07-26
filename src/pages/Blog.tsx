@@ -22,7 +22,7 @@ const blogPosts = [
     id: 1,
     title: "Comment se déroule une mission avec MECAHUB PRO ?",
     excerpt: "Découvrez notre méthode simple, claire et structurée pour accompagner les entreprises industrielles dans leurs projets mécaniques.",
-    image: blogImage,
+    image: "/lovable-uploads/43a485ed-8e45-427e-a3a9-41dee32f88fb.png",
     date: "2025-01-22",
     readTime: "5 min",
     category: "Méthode",
