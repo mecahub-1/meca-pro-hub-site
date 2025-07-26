@@ -49,7 +49,17 @@ export function JoinForm() {
     "Technicien mécanique",
     "Ingénieur R&D",
     "Concepteur 3D",
-    "Ingénieur produit"
+    "Ingénieur produit",
+    "Commercial technique",
+    "Ingénieur commercial",
+    "Business developer",
+    "Consultant en recrutement",
+    "Responsable recrutement",
+    "Talent acquisition specialist",
+    "Chargé de marketing",
+    "Responsable marketing",
+    "Chef de produit marketing",
+    "Responsable communication"
   ];
 
   const skillsOptions = [
@@ -64,7 +74,20 @@ export function JoinForm() {
     "Tolérancement dimensionnel",
     "Gestion de projet",
     "Prototypage",
-    "Validation expérimentale"
+    "Validation expérimentale",
+    "Négociation commerciale",
+    "Prospection client",
+    "Développement business",
+    "Relation client",
+    "Vente technique",
+    "Sourcing candidats",
+    "Entretiens de recrutement",
+    "Évaluation des compétences",
+    "Stratégie marketing",
+    "Marketing digital",
+    "Communication",
+    "Analyse de marché",
+    "Brand management"
   ];
 
   const softwareOptions = [
@@ -81,7 +104,19 @@ export function JoinForm() {
     "Matlab/Simulink",
     "SolidWorks Simulation",
     "KeyShot",
-    "3ds Max/Maya"
+    "3ds Max/Maya",
+    "Salesforce",
+    "HubSpot",
+    "Pipedrive",
+    "LinkedIn Sales Navigator",
+    "Jobaffinity",
+    "Workday",
+    "BambooHR",
+    "Adobe Creative Suite",
+    "Mailchimp",
+    "Google Analytics",
+    "Hootsuite",
+    "Canva"
   ];
 
   const experienceOptions = [
@@ -98,7 +133,13 @@ export function JoinForm() {
     "Métallurgie",
     "Plasturgie",
     "Packaging",
-    "Robotique/Automatisme"
+    "Robotique/Automatisme",
+    "Services aux entreprises",
+    "Conseil en ingénierie",
+    "Industrie 4.0",
+    "Technologies vertes",
+    "Défense/Sécurité",
+    "Télécommunications"
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
